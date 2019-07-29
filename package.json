@@ -1,0 +1,25 @@
+{
+  "name": "spinal-env-viewer-plugin-task",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "file-saver": "^2.0.2",
+    "exceljs": "^1.13.0",
+    "spinal-env-viewer-context-menu-service": "git+https://github.com/spinalcom/spinal-env-viewer-context-menu-service.git",
+    "spinal-env-viewer-graph-service": "git+https://github.com/spinalcom/Spinal-Graph-Service.git",
+    "spinal-env-viewer-room-manager": "git+https://github.com/spinalcom/spinal-env-viewer-room-manager.git"
+  },
+  "browserify": {
+    "transform": [
+      "vueify",
+      "babelify"
+    ]
+  }
+}
