@@ -14,7 +14,7 @@
       </md-list-item>
     </md-list>
 
-    <div class="header md-layout">
+    <div class="head md-layout">
       <md-button class="btn md-layout-item md-size-45"
                  @click="exportFile">
         <md-icon>file_download</md-icon>
@@ -36,38 +36,50 @@
           <h1 class="md-title">Visits</h1>
         </div>
 
-        <md-field md-clearable
+        <div class="scheduleBtn md-toolbar-section-end">
+          <md-button>
+            <md-icon>calendar_today</md-icon>
+            Schedule Visit
+          </md-button>
+        </div>
+
+        <!-- <md-field md-clearable
                   class="md-toolbar-section-end">
           <md-input placeholder="Search by name..."
                     v-model="search"
                     @input="searchOnTable" />
-        </md-field>
+        </md-field> -->
 
       </md-table-toolbar>
 
       <md-table-empty-state md-label="No Visits found"
-                            :md-description="`No Visits found. Create a new visits.`">
+                            :md-description="`No Data found. Create a new.`">
       </md-table-empty-state>
 
-      <!-- <md-table-row slot="md-table-row"
+      <md-table-row slot="md-table-row"
                     slot-scope="{ item }">
-        <md-table-cell md-label="Task Name"
-                       md-numeric>{{ item.name }}</md-table-cell>
+        <md-table-cell md-label="Name">{{ item.name }}</md-table-cell>
 
         <md-table-cell md-label="Periodicity">
           {{`${item.periodicity.number} ${item.periodicity.mesure}`}}
         </md-table-cell>
 
-        <md-table-cell md-label="Type">{{ item.visitType.name }}</md-table-cell>
+        <md-table-cell md-label="Intervetion">
+          {{displayInterventionTime(item.intervention.number,item.intervention.mesure)}}
+        </md-table-cell>
 
-      </md-table-row> -->
+        <md-table-cell md-label="Description">
+          {{displayDescription(item.description)}}
+        </md-table-cell>
 
-      <md-table-row>
+      </md-table-row>
+
+      <!-- <md-table-row>
         <md-table-head>Name</md-table-head>
         <md-table-head>Periodicity</md-table-head>
         <md-table-head>Intervention</md-table-head>
         <md-table-head>Description</md-table-head>
-        <md-table-head></md-table-head>
+
       </md-table-row>
 
       <md-table-row v-for="(item,index) in searched"
@@ -84,35 +96,7 @@
 
         <md-table-cell>{{ item.description }}</md-table-cell>
 
-        <md-table-cell>
-          <md-menu md-direction="bottom-start">
-            <md-button class="md-icon-button"
-                       md-menu-trigger>
-              <md-icon>more_vert</md-icon>
-            </md-button>
-
-            <md-menu-content>
-              <md-menu-item>My Item 1</md-menu-item>
-              <md-menu-item>My Item 2</md-menu-item>
-              <md-menu-item>My Item 3</md-menu-item>
-            </md-menu-content>
-
-          </md-menu>
-        </md-table-cell>
-
-        <!-- <md-table-cell>
-          <md-button class="md-icon-button">
-            <md-icon>edit</md-icon>
-          </md-button>
-        </md-table-cell>
-
-        <md-table-cell>
-          <md-button class="md-icon-button">
-            <md-icon>delete</md-icon>
-          </md-button>
-        </md-table-cell> -->
-
-      </md-table-row>
+      </md-table-row> -->
 
     </md-table>
   </md-content>
@@ -161,15 +145,60 @@ export default {
     },
 
     exportFile() {
-      ExcelManager.exportExcel(
-        this.nodeId,
-        this.visitSelected.type,
-        this.allData.get()
-      );
+      let data = [];
+      for (let i = 0; i < this.allData.length; i++) {
+        const element = this.allData[i].info.get();
+        data.push(element);
+      }
+      ExcelManager.exportExcel(this.nodeId, this.visitSelected.type, data);
     },
 
     importFile() {
-      ExcelManager.importFile();
+      ExcelManager.importFile()
+        .then(res => {
+          res.forEach(element => {
+            element.rows.forEach(row => {
+              this.createVisitWithImport(row);
+            });
+          });
+        })
+        .catch(err => {
+          console.log(err);
+          alert("error");
+        });
+    },
+
+    createVisitWithImport(row) {
+      let taskName = row[0];
+      let periodicityNumber = row[1];
+      let pMesure = this.getMesure(row[2]);
+      let periodicityMesure = pMesure !== -1 ? pMesure - 1 : 0;
+      let interventionNumber = row[3];
+      let iMesure = this.getMesure(row[4]);
+      let interventionMesure = iMesure !== -1 ? iMesure : 0;
+      let description = row[6] ? row[6] : "";
+
+      console.log(
+        this.nodeId,
+        taskName,
+        Number(periodicityNumber),
+        Number(periodicityMesure),
+        this.visitSelected.id,
+        interventionNumber !== "" ? Number(interventionNumber) : undefined,
+        interventionMesure !== "" ? Number(interventionMesure) : undefined,
+        description
+      );
+
+      taskService.addTaskOnGroup(
+        this.nodeId,
+        taskName,
+        Number(periodicityNumber),
+        Number(periodicityMesure),
+        this.visitSelected.id,
+        interventionNumber !== "" ? Number(interventionNumber) : undefined,
+        interventionMesure !== "" ? Number(interventionMesure) : undefined,
+        description
+      );
     },
 
     getAllData() {
@@ -183,7 +212,12 @@ export default {
           this.allData = res;
 
           this.bindProcess = this.allData.bind(() => {
-            this.searched = this.allData.get();
+            this.searched = [];
+
+            for (let i = 0; i < this.allData.length; i++) {
+              const info = this.allData[i].info;
+              this.searched.push(info.get());
+            }
           });
 
           // res = res.map(el => {
@@ -199,6 +233,29 @@ export default {
 
     goBack() {
       this.$emit("goBack");
+    },
+
+    getVisitId(visitName) {
+      return taskService.getAllVisits().then(res => {
+        let visits = res.map(el => el.get());
+        let found = visits.find(el => {
+          return el.type.toLowerCase() === visitName.toLowerCase();
+        });
+
+        if (found) return found.id;
+        return undefined;
+      });
+    },
+
+    getMesure(mesure) {
+      return ["minute(s)", "day(s)", "month(s)", "year(s)"].indexOf(mesure);
+    },
+
+    displayInterventionTime: function(number, mesure) {
+      return number !== "" && mesure !== "" ? `${number} ${mesure}` : "--";
+    },
+    displayDescription: function(description) {
+      return description.trim().length > 0 ? description : "--";
     }
   }
 };
@@ -210,19 +267,23 @@ export default {
   height: 100%;
 }
 
-.myContent .header {
+.myContent .head {
   flex-wrap: nowrap;
   height: 50px;
   justify-content: center;
 }
 
-.myContent .header .btn {
+.myContent .head .btn {
   border: 1px solid gray;
 }
 
 .myContent .mdTable {
   width: 100%;
-  height: calc(100% - 50px);
+  height: calc(100% - 130px);
   overflow: hidden;
+}
+
+.scheduleBtn {
+  justify-content: center;
 }
 </style>

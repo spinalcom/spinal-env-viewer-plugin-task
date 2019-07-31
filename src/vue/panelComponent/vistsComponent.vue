@@ -23,7 +23,6 @@ export default {
   mounted() {
     taskService.getAllVisits().then(res => {
       this.allVisits = res.map(el => el.get());
-      console.log(this.allVisits);
     });
   },
   methods: {

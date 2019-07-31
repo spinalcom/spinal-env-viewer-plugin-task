@@ -1,7 +1,8 @@
 import vue from "vue";
 import TaskMaintenancePanel from '../vue/panelVue.vue';
 
-import CreateVisitDialog from "../vue/createVisitDialog.vue"
+import CreateVisitDialog from "../vue/dialogs/createVisitDialog.vue"
+import ScheduleVisitDialog from "../vue/dialogs/scheduleVisit.vue"
 
 const {
   SpinalForgeExtention
@@ -39,10 +40,16 @@ for (let index = 0; index < panels.length; index++) {
 //////////////////////////////////////////////////////////////////////////////
 
 const dialogs = [{
-  name: "createVisitDialog",
-  vueMountComponent: vue.extend(CreateVisitDialog),
-  parentContainer: document.body
-}];
+    name: "createVisitDialog",
+    vueMountComponent: vue.extend(CreateVisitDialog),
+    parentContainer: document.body
+  },
+  {
+    name: "scheduleVisitDialog",
+    vueMountComponent: vue.extend(ScheduleVisitDialog),
+    parentContainer: document.body
+  }
+];
 
 for (let index = 0; index < dialogs.length; index++) {
   SpinalMountExtention.mount(dialogs[index]);

@@ -5,27 +5,25 @@ import {
   SpinalGraphService
 } from "spinal-env-viewer-graph-service";
 
-
 class ExcelManager {
   constructor() {
     this.workbook = new Excel.Workbook();
+
     this.workbook.creator = "spinalcom";
     this.workbook.created = new Date();
   }
-
 
   /////////////////////////////////////////////////////////////////
   //                        EXPORT                               //
   /////////////////////////////////////////////////////////////////
   exportExcel(id, sheetName, listItem) {
-    this.createAllSheet(id, sheetName, listItem).then(() => {
 
-      let name = SpinalGraphService.getInfo(id).name.get()
+    this.createAllSheet(id, sheetName, listItem).then(() => {
+      let name = SpinalGraphService.getInfo(id).name.get();
 
       this.workbook.xlsx
         .writeBuffer()
         .then(buffer => {
-
           FileSaver.saveAs(
             new Blob([buffer]),
             `spinal_maintenance_${name}_${sheetName}.xlsx`
@@ -45,7 +43,7 @@ class ExcelManager {
       state: "visible"
     });
 
-    sheet.columns = [{
+    let columns = [{
         header: "Name",
         key: "name",
         width: 32
@@ -94,6 +92,24 @@ class ExcelManager {
       };
     });
 
+    // console.log('sheet', sheet);
+
+    sheet.columns = columns;
+
+    // sheet.addTable({
+    //   name: "Table",
+    //   ref: 'A1',
+    //   headerRow: true,
+    //   style: {
+    //     theme: 'TableStyleDark3',
+    //     showRowStripes: true
+    //   },
+    //   columns: columns,
+    //   rows: listMapped
+    // })
+
+
+
     sheet.addRows(listMapped);
 
     return Promise.resolve(true);
@@ -126,8 +142,8 @@ class ExcelManager {
                 orientation: "landscape"
               },
               state: "visible"
-            });
-
+            }
+          );
 
           workSheet.columns = [{
               header: "Equipment Name",
@@ -149,7 +165,7 @@ class ExcelManager {
               key: "comments",
               width: 40
             }
-          ]
+          ];
 
           let rows = operation.bims.map(el => {
             return {
@@ -157,26 +173,23 @@ class ExcelManager {
               dbId: el.dbId,
               state: el.state,
               comments: el.comments
-            }
-          })
+            };
+          });
 
           workSheet.addRows(rows);
-          console.log("finish !!!!!!!!!!!!!")
+          console.log("finish !!!!!!!!!!!!!");
           return true;
-        })
-      })
-
-    })
+        });
+      });
+    });
   }
-
 
   createAllSheet(groupId, sheetName, listItem) {
     return Promise.all([
-      this.createTaskSheet(listItem, sheetName),
+      this.createTaskSheet(listItem, sheetName)
       // this.createTasksOperationSheet(groupId)
     ]);
   }
-
 
   _formatDate(argDate) {
     let date = new Date(parseInt(argDate));
@@ -184,32 +197,79 @@ class ExcelManager {
     return `${date.getDate()}/${date.getDay() + 1}/${date.getFullYear()}`;
   }
 
-
-
   /////////////////////////////////////////////////////////////////
   //                        IMPORT                               //
   /////////////////////////////////////////////////////////////////
 
   importFile() {
-    this.getFile();
+    return this.getFile();
   }
 
   getFile() {
     let input = document.createElement("input");
     input.type = "file";
     input.accept =
-      ".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+      ".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel";
     input.click();
 
-    input.addEventListener("change", (event) => {
-      let file = event.path[0].files[0];
+    return new Promise((resolve, reject) => {
+      input.addEventListener("change", event => {
 
-      this.workbook.xlsx.load(new Buffer(file)).then((data) => {
-        console.log("data", data)
-      }).catch(err => console.log(err))
-    })
+        let reader = new FileReader();
+        let file = event.target.files[0];
+
+
+        reader.onload = (_file) => {
+
+          let data = _file.target.result;
+
+
+          this.workbook.xlsx.load(data).then((res) => {
+            let rows = []
+            res.eachSheet((sheet) => {
+
+              let obj = {
+                sheet: sheet.name,
+                rows: []
+              }
+              sheet.eachRow((row, rowIndex) => {
+
+                if (rowIndex !== 1) {
+                  obj.rows.push(row.values.filter(
+                    el => {
+                      if (el) return true;
+                      return false;
+                    }));
+                }
+              })
+              rows.push(obj)
+            })
+
+            resolve(rows);
+
+          });
+
+        }
+
+        reader.onerror = (err) => {
+          reject(err);
+        }
+
+        reader.readAsArrayBuffer(file);
+      })
+
+
+
+      // console.log("file", file);
+
+      // this.workbook.xlsx
+      //   .load(file)
+      //   .then(data => {
+      //     console.log("data", data);
+      //   })
+      //   .catch(err => console.log(err));
+    });
   }
-
 }
 
 export default new ExcelManager();
