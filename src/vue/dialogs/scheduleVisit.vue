@@ -5,37 +5,76 @@
     <md-dialog-title>Schedule Visit</md-dialog-title>
 
     <md-dialog-content>
-      <h1>Hello World !!!!!!!!!!!</h1>
+
+      <span class="md-subheading">Schedule Visit</span>
+
+      <div>
+        <span class="md-caption">To</span>
+        <md-datepicker v-model="beginDate"
+                       :md-override-native="false" />
+
+      </div>
+      <div>
+        <span class="md-caption">At</span>
+        <md-datepicker v-model="endDate"
+                       :md-override-native="false"
+                       :disabled="typeof beginDate !== 'undefined'" />
+      </div>
+
     </md-dialog-content>
 
     <md-dialog-actions>
       <md-button class="md-primary"
                  @click="closeDialog(false)">Close</md-button>
       <md-button class="md-primary"
-                 @click="closeDialog(true)">Save</md-button>
+                 @click="closeDialog(true)"
+                 :disabled="!isDiabled()">Save</md-button>
     </md-dialog-actions>
 
   </md-dialog>
 </template>
 
 <script>
-// import taskService from "spinal-env-viewer-task-service";
+import taskService from "spinal-env-viewer-task-service";
 
 export default {
   name: "scheduleVisitDialog",
   props: ["onFinised", ""],
   data() {
     return {
-      showDialog: true
+      beginDate: undefined,
+      endDate: undefined,
+      showDialog: true,
+      groupId: "",
+      visitType: "",
+      data: []
     };
   },
 
   methods: {
-    opened(option) {},
+    opened(option) {
+      this.groupId = option.groupId;
+      this.visitType = option.visitId;
+      this.data = option.data.map(el => {
+        return {
+          name: el.name,
+          periodNumber: el.periodicity.number,
+          periodMesure: ["day(s)", "week(s)", "month(s)", "year(s)"].indexOf(
+            el.periodicity.mesure
+          )
+        };
+      });
+    },
 
     removed(option) {
       if (option) {
-        console.log("hello");
+        taskService.generateEvent(
+          this.visitType,
+          this.groupId,
+          this.beginDate,
+          this.endDate,
+          this.data
+        );
       }
 
       this.showDialog = false;
@@ -44,6 +83,14 @@ export default {
       if (typeof this.onFinised === "function") {
         this.onFinised(closeResult);
       }
+    },
+
+    isDiabled() {
+      return (
+        typeof this.beginDate !== "undefined" &&
+        typeof this.endDate !== "undefined" &&
+        new Date(this.endDate).getTime() > new Date(this.beginDate).getTime()
+      );
     }
   }
 };

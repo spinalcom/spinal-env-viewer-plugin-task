@@ -37,7 +37,8 @@
         </div>
 
         <div class="scheduleBtn md-toolbar-section-end">
-          <md-button>
+          <md-button @click="scheduleVisit"
+                     class="btn">
             <md-icon>calendar_today</md-icon>
             Schedule Visit
           </md-button>
@@ -140,7 +141,7 @@ export default {
       spinalPanelManagerService.openPanel("createVisitDialog", {
         create: true,
         groupId: this.nodeId,
-        visitId: this.visitSelected.id
+        visitId: this.visitSelected.type
       });
     },
 
@@ -183,7 +184,7 @@ export default {
         taskName,
         Number(periodicityNumber),
         Number(periodicityMesure),
-        this.visitSelected.id,
+        this.visitSelected.type,
         interventionNumber !== "" ? Number(interventionNumber) : undefined,
         interventionMesure !== "" ? Number(interventionMesure) : undefined,
         description
@@ -194,9 +195,13 @@ export default {
         taskName,
         Number(periodicityNumber),
         Number(periodicityMesure),
-        this.visitSelected.id,
-        interventionNumber !== "" ? Number(interventionNumber) : undefined,
-        interventionMesure !== "" ? Number(interventionMesure) : undefined,
+        this.visitSelected.type,
+        interventionNumber.trim().length > 0
+          ? Number(interventionNumber)
+          : undefined,
+        interventionMesure.trim().length > 0
+          ? Number(interventionMesure)
+          : undefined,
         description
       );
     },
@@ -206,7 +211,6 @@ export default {
         .getGroupTasks(this.nodeId, this.visitSelected.type)
         .then(res => {
           if (this.allData && this.bindProcess) {
-            console.log("unbind");
             this.allData.unbind(this.bindProcess);
           }
           this.allData = res;
@@ -251,11 +255,19 @@ export default {
       return ["minute(s)", "day(s)", "month(s)", "year(s)"].indexOf(mesure);
     },
 
-    displayInterventionTime: function(number, mesure) {
+    displayInterventionTime(number, mesure) {
       return number !== "" && mesure !== "" ? `${number} ${mesure}` : "--";
     },
-    displayDescription: function(description) {
+    displayDescription(description) {
       return description.trim().length > 0 ? description : "--";
+    },
+
+    scheduleVisit() {
+      spinalPanelManagerService.openPanel("scheduleVisitDialog", {
+        groupId: this.nodeId,
+        visitId: this.visitSelected.type,
+        data: this.searched
+      });
     }
   }
 };
@@ -285,5 +297,9 @@ export default {
 
 .scheduleBtn {
   justify-content: center;
+}
+
+.scheduleBtn .btn {
+  border: 1px solid gray;
 }
 </style>

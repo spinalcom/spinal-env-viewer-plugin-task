@@ -21,9 +21,7 @@ export default {
     };
   },
   mounted() {
-    taskService.getAllVisits().then(res => {
-      this.allVisits = res.map(el => el.get());
-    });
+    this.allVisits = taskService.getAllVisits();
   },
   methods: {
     select(item) {
