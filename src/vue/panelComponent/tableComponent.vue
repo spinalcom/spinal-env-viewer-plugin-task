@@ -179,17 +179,6 @@ export default {
       let interventionMesure = iMesure !== -1 ? iMesure : 0;
       let description = row[6] ? row[6] : "";
 
-      console.log(
-        this.nodeId,
-        taskName,
-        Number(periodicityNumber),
-        Number(periodicityMesure),
-        this.visitSelected.type,
-        interventionNumber !== "" ? Number(interventionNumber) : undefined,
-        interventionMesure !== "" ? Number(interventionMesure) : undefined,
-        description
-      );
-
       taskService.addTaskOnGroup(
         this.nodeId,
         taskName,

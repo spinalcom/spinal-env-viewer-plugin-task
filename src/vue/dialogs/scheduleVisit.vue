@@ -79,6 +79,7 @@ export default {
 
       this.showDialog = false;
     },
+
     closeDialog(closeResult) {
       if (typeof this.onFinised === "function") {
         this.onFinised(closeResult);
