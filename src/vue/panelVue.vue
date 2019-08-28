@@ -12,8 +12,6 @@
 </template>
 
 <script>
-// import taskService from "spinal-env-viewer-task-service";
-
 import vistsComponent from "./panelComponent/vistsComponent.vue";
 import tableComponent from "./panelComponent/tableComponent.vue";
 

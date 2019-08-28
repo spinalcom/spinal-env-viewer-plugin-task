@@ -3,6 +3,7 @@ import TaskMaintenancePanel from '../vue/panelVue.vue';
 
 import CreateVisitDialog from "../vue/dialogs/createVisitDialog.vue"
 import ScheduleVisitDialog from "../vue/dialogs/scheduleVisit.vue"
+import ConfirmDialog from "../vue/dialogs/confirmDialog.vue";
 
 const {
   SpinalForgeExtention
@@ -22,7 +23,6 @@ let panels = [{
     closeBehaviour: "hide"
   },
   style: {
-    height: "475px",
     left: "400px"
   }
 }]
@@ -47,6 +47,11 @@ const dialogs = [{
   {
     name: "scheduleVisitDialog",
     vueMountComponent: vue.extend(ScheduleVisitDialog),
+    parentContainer: document.body
+  },
+  {
+    name: "confirmDialog",
+    vueMountComponent: vue.extend(ConfirmDialog),
     parentContainer: document.body
   }
 ];

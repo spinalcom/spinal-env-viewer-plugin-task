@@ -131,7 +131,7 @@ export default {
 
     removed(option) {
       if (option) {
-        taskService.addTaskOnGroup(
+        taskService.addVisitOnGroup(
           this.groupId,
           this.taskName,
           Number(this.periodicity.number),

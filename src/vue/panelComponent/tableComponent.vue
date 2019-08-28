@@ -29,11 +29,12 @@
     </div>
 
     <md-table class="mdTable"
-              v-model="searched">
+              v-model="searched"
+              @md-selected="onSelect">
       <md-table-toolbar>
 
         <div class="md-toolbar-section-start">
-          <h1 class="md-title">Visits</h1>
+          <h1 class="md-title">{{visitSelected.type}}</h1>
         </div>
 
         <div class="scheduleBtn md-toolbar-section-end">
@@ -58,7 +59,9 @@
       </md-table-empty-state>
 
       <md-table-row slot="md-table-row"
-                    slot-scope="{ item }">
+                    slot-scope="{ item }"
+                    md-selectable="multiple"
+                    md-auto-select>
         <md-table-cell md-label="Name">{{ item.name }}</md-table-cell>
 
         <md-table-cell md-label="Periodicity">
@@ -113,6 +116,8 @@ import taskService from "spinal-env-viewer-task-service";
 
 import ExcelManager from "../../js/excelManager";
 
+import FileSaver from "file-saver";
+
 export default {
   name: "tableComponent",
   props: {
@@ -130,7 +135,8 @@ export default {
     this.allData = [];
     return {
       search: "",
-      searched: []
+      searched: [],
+      dataToSchedule: []
     };
   },
   mounted() {
@@ -145,59 +151,70 @@ export default {
       });
     },
 
+    onSelect(items) {
+      this.dataToSchedule = items;
+    },
+
     exportFile() {
       let data = [];
       for (let i = 0; i < this.allData.length; i++) {
         const element = this.allData[i].info.get();
         data.push(element);
       }
-      ExcelManager.exportExcel(this.nodeId, this.visitSelected.type, data);
+
+      ExcelManager.exportExcel(this.nodeId, this.visitSelected.type, data).then(
+        workbook => {
+          spinalPanelManagerService.openPanel("confirmDialog", {
+            title: "Download",
+            message: `<p>Download spinal_${this.visitSelected.type}.xlsx</p>`,
+            validate: () => {
+              workbook.xlsx
+                .writeBuffer()
+                .then(buffer => {
+                  FileSaver.saveAs(
+                    new Blob([buffer]),
+                    `spinal_${this.visitSelected.type}.xlsx`
+                  );
+                })
+                .catch(err => console.log(err));
+            }
+          });
+        }
+      );
     },
 
     importFile() {
-      ExcelManager.importFile()
-        .then(res => {
-          res.forEach(element => {
-            element.rows.forEach(row => {
-              this.createVisitWithImport(row);
+      ExcelManager.importFile().then(res => {
+        spinalPanelManagerService.openPanel("confirmDialog", {
+          title: "Import",
+          message: `
+            <div> Do you want import in ${this.visitSelected.type} ?<div>
+
+            <div> Number of valid items : ${res.valid.length} </div>
+            <div> Number of invalid items : ${res.invalid.length} </div>
+
+          `,
+          validate: () => {
+            res.valid.forEach(element => {
+              taskService.addVisitOnGroup(
+                this.nodeId,
+                element.name,
+                element.periodNumber,
+                element.periodMesure,
+                this.visitSelected.type,
+                element.interventionNumber,
+                element.interventionMesure,
+                element.description
+              );
             });
-          });
-        })
-        .catch(err => {
-          console.log(err);
-          alert("error");
+          }
         });
-    },
-
-    createVisitWithImport(row) {
-      let taskName = row[0];
-      let periodicityNumber = row[1];
-      let pMesure = this.getMesure(row[2]);
-      let periodicityMesure = pMesure !== -1 ? pMesure - 1 : 0;
-      let interventionNumber = row[3];
-      let iMesure = this.getMesure(row[4]);
-      let interventionMesure = iMesure !== -1 ? iMesure : 0;
-      let description = row[6] ? row[6] : "";
-
-      taskService.addTaskOnGroup(
-        this.nodeId,
-        taskName,
-        Number(periodicityNumber),
-        Number(periodicityMesure),
-        this.visitSelected.type,
-        interventionNumber.trim().length > 0
-          ? Number(interventionNumber)
-          : undefined,
-        interventionMesure.trim().length > 0
-          ? Number(interventionMesure)
-          : undefined,
-        description
-      );
+      });
     },
 
     getAllData() {
       return taskService
-        .getGroupTasks(this.nodeId, this.visitSelected.type)
+        .getGroupVisits(this.nodeId, this.visitSelected.type)
         .then(res => {
           if (this.allData && this.bindProcess) {
             this.allData.unbind(this.bindProcess);
@@ -241,22 +258,29 @@ export default {
     },
 
     getMesure(mesure) {
-      return ["minute(s)", "day(s)", "month(s)", "year(s)"].indexOf(mesure);
+      return ["minute(s)", "day(s)", "week(s)", "month(s)", "year(s)"].indexOf(
+        mesure
+      );
     },
 
     displayInterventionTime(number, mesure) {
       return number !== "" && mesure !== "" ? `${number} ${mesure}` : "--";
     },
+
     displayDescription(description) {
       return description.trim().length > 0 ? description : "--";
     },
 
     scheduleVisit() {
-      spinalPanelManagerService.openPanel("scheduleVisitDialog", {
-        groupId: this.nodeId,
-        visitId: this.visitSelected.type,
-        data: this.searched
-      });
+      if (this.dataToSchedule.length > 0) {
+        spinalPanelManagerService.openPanel("scheduleVisitDialog", {
+          groupId: this.nodeId,
+          visitId: this.visitSelected.type,
+          data: this.dataToSchedule
+        });
+      } else {
+        alert("select at least one visit !!!");
+      }
     }
   }
 };
@@ -290,5 +314,7 @@ export default {
 
 .scheduleBtn .btn {
   border: 1px solid gray;
+  width: 200px;
+  text-align: center;
 }
 </style>

@@ -57,6 +57,7 @@ export default {
       this.visitType = option.visitId;
       this.data = option.data.map(el => {
         return {
+          id: el.id,
           name: el.name,
           periodNumber: el.periodicity.number,
           periodMesure: ["day(s)", "week(s)", "month(s)", "year(s)"].indexOf(
