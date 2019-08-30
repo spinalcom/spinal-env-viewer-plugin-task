@@ -1,3 +1,4 @@
+/* eslint-disable no-debugger */
 
 <template>
   <md-content class="myContent">
