@@ -37,7 +37,7 @@ export default {
       this.setTitle(`Visit Manager : ${option.name.get()}`);
       this.nodeName = option.name.get();
       this.nodeId = option.id.get();
-      // this.getAllData();
+      // this.visitSelected = null;
     },
     setTitle(title) {
       spinalPanelManagerService.panels.TaskMaintenancePanel.panel.setTitle(

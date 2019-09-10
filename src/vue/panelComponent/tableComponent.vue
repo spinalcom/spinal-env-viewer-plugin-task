@@ -283,6 +283,11 @@ export default {
         alert("select at least one visit !!!");
       }
     }
+  },
+  watch: {
+    nodeId() {
+      this.getAllData();
+    }
   }
 };
 </script>
