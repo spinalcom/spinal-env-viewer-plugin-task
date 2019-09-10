@@ -29,7 +29,7 @@
       </md-button>
     </div>
 
-    <md-table class="mdTable"
+    <md-table class="mdTable visitAppTable"
               v-model="searched"
               @md-selected="onSelect">
       <md-table-toolbar>
@@ -45,13 +45,6 @@
             Schedule Visit
           </md-button>
         </div>
-
-        <!-- <md-field md-clearable
-                  class="md-toolbar-section-end">
-          <md-input placeholder="Search by name..."
-                    v-model="search"
-                    @input="searchOnTable" />
-        </md-field> -->
 
       </md-table-toolbar>
 
@@ -77,31 +70,30 @@
           {{displayDescription(item.description)}}
         </md-table-cell>
 
+        <!-- <md-table-cell md-label="">
+          <md-menu>
+            <md-button class="md-icon-button"
+                       md-menu-trigger
+                       @click.prevent="">
+              <md-icon>more_vert</md-icon>
+            </md-button>
+
+            <md-menu-content>
+              <md-menu-item>
+                <md-icon>phone</md-icon>
+                <span>My Item 1</span>
+              </md-menu-item>
+
+              <md-menu-item>
+                <md-icon>phone</md-icon>
+                <span>My Item 2</span>
+              </md-menu-item>
+
+            </md-menu-content>
+          </md-menu>
+        </md-table-cell> -->
+
       </md-table-row>
-
-      <!-- <md-table-row>
-        <md-table-head>Name</md-table-head>
-        <md-table-head>Periodicity</md-table-head>
-        <md-table-head>Intervention</md-table-head>
-        <md-table-head>Description</md-table-head>
-
-      </md-table-row>
-
-      <md-table-row v-for="(item,index) in searched"
-                    :key="index">
-        <md-table-cell>{{item.name}}</md-table-cell>
-
-        <md-table-cell>
-          {{`${item.periodicity.number} ${item.periodicity.mesure}`}}
-        </md-table-cell>
-
-        <md-table-cell>
-          {{`${item.intervention.number} ${item.intervention.mesure}`}}
-        </md-table-cell>
-
-        <md-table-cell>{{ item.description }}</md-table-cell>
-
-      </md-table-row> -->
 
     </md-table>
   </md-content>
@@ -322,5 +314,27 @@ export default {
   border: 1px solid gray;
   width: 200px;
   text-align: center;
+}
+
+.visitTableCell {
+  max-height: 50px;
+}
+</style>
+
+<style>
+.md-table-cell-selection .md-table-cell-container,
+.md-table-cell-selection .md-table-cell-label,
+.md-table-cell-selection .md-table-head-container,
+.md-table-cell-selection .md-table-head-label {
+  margin: 5px;
+}
+
+.mdTable.visitAppTable .md-table-cell-container {
+  padding: 6px 32px 6px 24px;
+  height: 50px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 }
 </style>
