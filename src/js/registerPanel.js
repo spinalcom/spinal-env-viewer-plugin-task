@@ -4,6 +4,7 @@ import TaskMaintenancePanel from '../vue/panelVue.vue';
 import CreateVisitDialog from "../vue/dialogs/createVisitDialog.vue"
 import ScheduleVisitDialog from "../vue/dialogs/scheduleVisit.vue"
 import ConfirmDialog from "../vue/dialogs/confirmDialog.vue";
+import deleteItemDialog from "../vue/dialogs/deleteItemDialog.vue"
 
 const {
   SpinalForgeExtention
@@ -52,6 +53,11 @@ const dialogs = [{
   {
     name: "confirmDialog",
     vueMountComponent: vue.extend(ConfirmDialog),
+    parentContainer: document.body
+  },
+  {
+    name: "deleteItemDialog",
+    vueMountComponent: vue.extend(deleteItemDialog),
     parentContainer: document.body
   }
 ];

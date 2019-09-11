@@ -26,10 +26,17 @@
                      name="periodicity"
                      id="periodicity"
                      placeholder="Mesure">
-            <md-option value="0">Day(s)</md-option>
+            <!-- <md-option value="0">Day(s)</md-option>
             <md-option value="1">Week(s)</md-option>
             <md-option value="2">Month(s)</md-option>
-            <md-option value="3">Year(s)</md-option>
+            <md-option value="3">Year(s)</md-option> -->
+
+            <md-option v-for="(option,index) in periodicityMesures"
+                       :value="index"
+                       :key="index">
+              {{option}}
+            </md-option>
+
           </md-select>
         </md-field>
 
@@ -49,12 +56,20 @@
                      name="intervention"
                      id="intervention"
                      placeholder="Mesure">
-            <md-option value="">None</md-option>
+            <!--
             <md-option value="0">Minute(s)</md-option>
             <md-option value="1">Day(s)</md-option>
             <md-option value="2">Week(s)</md-option>
             <md-option value="3">Month(s)</md-option>
-            <md-option value="4">Year(s)</md-option>
+            <md-option value="4">Year(s)</md-option> -->
+
+            <md-option value="">None</md-option>
+            <md-option v-for="(option,index) in interventionMesures"
+                       :value="index"
+                       :key="index">
+              {{option}}
+            </md-option>
+
           </md-select>
         </md-field>
 
@@ -103,6 +118,14 @@ export default {
   name: "createVisitDialog",
   props: ["onFinised", ""],
   data() {
+    this.periodicityMesures = ["day(s)", "week(s)", "month(s)", "year(s)"];
+    this.interventionMesures = [
+      "minute(s)",
+      "day(s)",
+      "week(s)",
+      "month(s)",
+      "year(s)"
+    ];
     return {
       // visits: [],
       title: "",
@@ -114,7 +137,8 @@ export default {
       // type: "",
       // beginDate: null,
       groupId: null,
-      showDialog: true
+      showDialog: true,
+      create: false
     };
   },
   mounted() {
@@ -124,13 +148,37 @@ export default {
   },
   methods: {
     opened(option) {
-      this.title = option.create ? "Create Visit" : "Edit Visit";
+      this.create = option.create;
       this.groupId = option.groupId;
       this.visitId = option.visitId;
+
+      if (option.create) {
+        this.title = "Create Visit";
+      } else {
+        this.title = "Edit Visit";
+        this.description = option.description;
+        this.taskName = option.name;
+        this.intervention.number = option.intervention.number + "";
+
+        this.periodicity.number = option.periodicity.number + "";
+
+        let periodMesure = this.periodicityMesures.indexOf(
+          option.periodicity.mesure
+        );
+
+        let interventionMesure = this.interventionMesures.indexOf(
+          option.intervention.mesure
+        );
+
+        this.periodicity.mesure = periodMesure != -1 ? periodMesure + "" : "";
+
+        this.intervention.mesure =
+          interventionMesure != -1 ? interventionMesure + "" : "";
+      }
     },
 
     removed(option) {
-      if (option) {
+      if (option && this.create) {
         taskService.addVisitOnGroup(
           this.groupId,
           this.taskName,
@@ -145,6 +193,8 @@ export default {
             : undefined,
           this.description
         );
+      } else if (option && !this.create) {
+        console.log("update !!!!!!!");
       }
 
       this.showDialog = false;

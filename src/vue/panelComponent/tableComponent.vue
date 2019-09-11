@@ -18,7 +18,7 @@
     <div class="head md-layout">
       <md-button class="btn md-layout-item md-size-45"
                  @click="exportFile">
-        <md-icon>file_download</md-icon>
+        <md-icon>open_in_browser</md-icon>
         <span>Export</span>
       </md-button>
 
@@ -39,11 +39,18 @@
         </div>
 
         <div class="scheduleBtn md-toolbar-section-end">
-          <md-button @click="scheduleVisit"
+          <!-- <md-button @click="scheduleVisit"
                      class="btn">
             <md-icon>calendar_today</md-icon>
             Schedule Visit
+          </md-button> -->
+
+          <md-button class="md-icon-button md-primary md-raised"
+                     @click="scheduleVisit"
+                     title="Schedule Visit">
+            <md-icon>calendar_today</md-icon>
           </md-button>
+
         </div>
 
       </md-table-toolbar>
@@ -70,28 +77,33 @@
           {{displayDescription(item.description)}}
         </md-table-cell>
 
-        <!-- <md-table-cell md-label="">
+        <md-table-cell md-label="">
           <md-menu>
             <md-button class="md-icon-button"
                        md-menu-trigger
-                       @click.prevent="">
+                       @click.stop="">
               <md-icon>more_vert</md-icon>
             </md-button>
 
             <md-menu-content>
-              <md-menu-item>
-                <md-icon>phone</md-icon>
-                <span>My Item 1</span>
+              <md-menu-item @click="editItem(item)">
+                <!-- <md-icon>edit</md-icon> -->
+                <span>Edit Visit</span>
               </md-menu-item>
 
-              <md-menu-item>
-                <md-icon>phone</md-icon>
-                <span>My Item 2</span>
+              <md-menu-item @click="editEvents(item)">
+                <!-- <md-icon>edit</md-icon> -->
+                <span>Edit Events</span>
+              </md-menu-item>
+
+              <md-menu-item @click="deleteItem(item)">
+                <!-- <md-icon>delete</md-icon> -->
+                <span>Delete</span>
               </md-menu-item>
 
             </md-menu-content>
           </md-menu>
-        </md-table-cell> -->
+        </md-table-cell>
 
       </md-table-row>
 
@@ -110,6 +122,7 @@ import taskService from "spinal-env-viewer-task-service";
 import ExcelManager from "../../js/excelManager";
 
 import FileSaver from "file-saver";
+import { SpinalGraphService } from "spinal-env-viewer-graph-service";
 
 export default {
   name: "tableComponent",
@@ -218,6 +231,7 @@ export default {
             this.searched = [];
 
             for (let i = 0; i < this.allData.length; i++) {
+              SpinalGraphService._addNode(this.allData[i]);
               const info = this.allData[i].info;
               this.searched.push(info.get());
             }
@@ -274,6 +288,26 @@ export default {
       } else {
         alert("select at least one visit !!!");
       }
+    },
+
+    editItem(item) {
+      spinalPanelManagerService.openPanel("createVisitDialog", {
+        create: false,
+        name: item.name,
+        groupId: item.groupId,
+        visitId: item.visitType,
+        description: item.description,
+        itemId: item.id,
+        intervention: item.intervention,
+        periodicity: item.periodicity
+      });
+    },
+    editEvents(item) {
+      console.log("edit Events", item);
+    },
+
+    deleteItem(item) {
+      spinalPanelManagerService.openPanel("deleteItemDialog", item);
     }
   },
   watch: {
@@ -297,7 +331,7 @@ export default {
 }
 
 .myContent .head .btn {
-  border: 1px solid gray;
+  border: 1px solid #448aff;
 }
 
 .myContent .mdTable {
@@ -336,5 +370,9 @@ export default {
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+}
+
+.myContent .md-button .md-ripple {
+  padding: 0px !important;
 }
 </style>
