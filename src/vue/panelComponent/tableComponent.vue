@@ -78,27 +78,45 @@
         </md-table-cell>
 
         <md-table-cell md-label="">
-          <md-menu>
+          <md-menu md-size="small">
             <md-button class="md-icon-button"
                        md-menu-trigger
                        @click.stop="">
               <md-icon>more_vert</md-icon>
             </md-button>
 
-            <md-menu-content>
+            <md-menu-content class="menuItem">
               <md-menu-item @click="editItem(item)">
-                <!-- <md-icon>edit</md-icon> -->
-                <span>Edit Visit</span>
+                <span>
+                  <md-icon tiny>edit</md-icon>
+                </span>
+                &nbsp;
+                &nbsp;
+                <span>
+                  Edit Visit
+                </span>
               </md-menu-item>
 
               <md-menu-item @click="editEvents(item)">
-                <!-- <md-icon>edit</md-icon> -->
-                <span>Edit Events</span>
+                <span>
+                  <md-icon>calendar_today</md-icon>
+                </span>
+                &nbsp;
+                &nbsp;
+                <span>
+                  Edit Events
+                </span>
               </md-menu-item>
 
               <md-menu-item @click="deleteItem(item)">
-                <!-- <md-icon>delete</md-icon> -->
-                <span>Delete</span>
+                <span>
+                  <md-icon>delete</md-icon>
+                </span>
+                &nbsp;
+                &nbsp;
+                <span>
+                  Delete
+                </span>
               </md-menu-item>
 
             </md-menu-content>
@@ -271,7 +289,16 @@ export default {
     },
 
     displayInterventionTime(number, mesure) {
-      return number !== "" && mesure !== "" ? `${number} ${mesure}` : "--";
+      if (Number.isNaN(Number(number))) {
+        return `--`;
+      } else if (number === "" && mesure === "") {
+        return "--";
+      } else {
+        return `${number} ${mesure}`;
+      }
+      // return Number(number) && number !== "" && Number(mesure) && mesure !== ""
+      //   ? `${number} ${mesure}`
+      //   : "--";
     },
 
     displayDescription(description) {
@@ -302,6 +329,7 @@ export default {
         periodicity: item.periodicity
       });
     },
+
     editEvents(item) {
       console.log("edit Events", item);
     },
@@ -374,5 +402,9 @@ export default {
 
 .myContent .md-button .md-ripple {
   padding: 0px !important;
+}
+
+.menuItem .md-list-item-content {
+  justify-content: flex-start;
 }
 </style>

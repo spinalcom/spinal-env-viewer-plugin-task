@@ -50,6 +50,7 @@ export default {
   justify-content: center;
   align-items: center;
   font-size: 18px;
+  text-align: center;
 }
 
 .visits .visit:hover {

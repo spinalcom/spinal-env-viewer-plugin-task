@@ -126,6 +126,7 @@ export default {
       "month(s)",
       "year(s)"
     ];
+    this.visitToEditId;
     return {
       // visits: [],
       title: "",
@@ -151,6 +152,7 @@ export default {
       this.create = option.create;
       this.groupId = option.groupId;
       this.visitId = option.visitId;
+      this.visitToEditId = option.itemId;
 
       if (option.create) {
         this.title = "Create Visit";
@@ -194,7 +196,28 @@ export default {
           this.description
         );
       } else if (option && !this.create) {
-        console.log("update !!!!!!!");
+        let valueObj = {
+          name: this.taskName,
+          description: this.description,
+          periodicity: {
+            number: Number(this.periodicity.number),
+            mesure: Number(this.periodicity.mesure)
+          },
+          intervention: {
+            number:
+              this.intervention.number !== ""
+                ? Number(this.intervention.number)
+                : undefined,
+            mesure:
+              this.intervention.mesure !== ""
+                ? Number(this.intervention.mesure)
+                : undefined
+          }
+        };
+
+        console.log(valueObj.intervention);
+
+        taskService.editVisit(this.visitToEditId, valueObj);
       }
 
       this.showDialog = false;
