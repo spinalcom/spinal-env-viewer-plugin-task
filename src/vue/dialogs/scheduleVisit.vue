@@ -9,16 +9,20 @@
       <span class="md-subheading">Schedule Visit</span>
 
       <div>
-        <span class="md-caption">To</span>
-        <md-datepicker v-model="beginDate"
-                       :md-override-native="false" />
+
+        <md-datepicker :md-model-type="Number"
+                       v-model="beginDate">
+          <label>To</label>
+        </md-datepicker>
 
       </div>
+
       <div>
-        <span class="md-caption">At</span>
-        <md-datepicker v-model="endDate"
-                       :md-override-native="false"
-                       :disabled="typeof beginDate !== 'undefined'" />
+        <md-datepicker :md-model-type="Number"
+                       v-model="endDate"
+                       :disabled="typeof beginDate !== 'undefined'">
+          <label>At</label>
+        </md-datepicker>
       </div>
 
     </md-dialog-content>
@@ -49,6 +53,9 @@ export default {
       visitType: "",
       data: []
     };
+  },
+  mounted() {
+    this.$material.locale.dateFormat = "dd/MM/yyyy";
   },
 
   methods: {
