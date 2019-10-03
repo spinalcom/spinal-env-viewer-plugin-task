@@ -1,5 +1,5 @@
 <template>
-  <md-content class="mdContent">
+  <div class="_mdContent">
     <visits-component v-if="!visitSelected"
                       :visitSelected="visitSelected"
                       @selectVisit="selectVisit"></visits-component>
@@ -8,7 +8,7 @@
                      :nodeId="nodeId"
                      :visitSelected="visitSelected"
                      @goBack="goBack"></table-component>
-  </md-content>
+  </div>
 </template>
 
 <script>
@@ -77,7 +77,7 @@ export default {
 
 
 <style scoped>
-.mdContent {
+._mdContent {
   width: 100%;
   height: calc(100% - 15px);
 }

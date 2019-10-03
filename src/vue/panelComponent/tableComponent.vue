@@ -86,6 +86,18 @@
             </md-button>
 
             <md-menu-content class="menuItem">
+
+              <md-menu-item @click="ManageEvents(item)">
+                <span>
+                  <md-icon>notifications</md-icon>
+                </span>
+                &nbsp;
+                &nbsp;
+                <span>
+                  Manage events
+                </span>
+              </md-menu-item>
+
               <md-menu-item @click="editItem(item)">
                 <span>
                   <md-icon tiny>edit</md-icon>
@@ -94,17 +106,6 @@
                 &nbsp;
                 <span>
                   Edit Visit
-                </span>
-              </md-menu-item>
-
-              <md-menu-item @click="editEvents(item)">
-                <span>
-                  <md-icon>calendar_today</md-icon>
-                </span>
-                &nbsp;
-                &nbsp;
-                <span>
-                  Edit Events
                 </span>
               </md-menu-item>
 
@@ -330,8 +331,8 @@ export default {
       });
     },
 
-    editEvents(item) {
-      console.log("edit Events", item);
+    ManageEvents(item) {
+      spinalPanelManagerService.openPanel("eventsManagePanel", item);
     },
 
     deleteItem(item) {

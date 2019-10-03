@@ -10,12 +10,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "file-saver": "^2.0.2",
     "exceljs": "^1.13.0",
-    "spinal-env-viewer-task-service" : "git+https://github.com/spinalcom/spinal-env-viewer-task-service.git",
+    "file-saver": "^2.0.2",
     "spinal-env-viewer-context-menu-service": "git+https://github.com/spinalcom/spinal-env-viewer-context-menu-service.git",
     "spinal-env-viewer-graph-service": "git+https://github.com/spinalcom/Spinal-Graph-Service.git",
-    "spinal-env-viewer-room-manager": "git+https://github.com/spinalcom/spinal-env-viewer-room-manager.git"
+    "spinal-env-viewer-room-manager": "git+https://github.com/spinalcom/spinal-env-viewer-room-manager.git",
+    "spinal-env-viewer-task-service": "git+https://github.com/spinalcom/spinal-env-viewer-task-service.git",
+    "vue-cal": "^2.6.0"
   },
   "browserify": {
     "transform": [

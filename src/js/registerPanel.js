@@ -1,10 +1,13 @@
 import vue from "vue";
 import TaskMaintenancePanel from '../vue/panelVue.vue';
+import EventsManagePanel from "../vue/events/panel.vue";
 
 import CreateVisitDialog from "../vue/dialogs/createVisitDialog.vue"
 import ScheduleVisitDialog from "../vue/dialogs/scheduleVisit.vue"
 import ConfirmDialog from "../vue/dialogs/confirmDialog.vue";
 import deleteItemDialog from "../vue/dialogs/deleteItemDialog.vue"
+import EditEventDialog from "../vue/events/dialog.vue";
+
 
 const {
   SpinalForgeExtention
@@ -21,6 +24,16 @@ let panels = [{
   vueMountComponent: vue.extend(TaskMaintenancePanel),
   panel: {
     title: "Task Maintenance",
+    closeBehaviour: "hide"
+  },
+  style: {
+    left: "400px"
+  }
+}, {
+  name: "eventsManagePanel",
+  vueMountComponent: vue.extend(EventsManagePanel),
+  panel: {
+    title: "Manage Events",
     closeBehaviour: "hide"
   },
   style: {
@@ -58,6 +71,10 @@ const dialogs = [{
   {
     name: "deleteItemDialog",
     vueMountComponent: vue.extend(deleteItemDialog),
+    parentContainer: document.body
+  }, {
+    name: "editEventDialog",
+    vueMountComponent: vue.extend(EditEventDialog),
     parentContainer: document.body
   }
 ];
