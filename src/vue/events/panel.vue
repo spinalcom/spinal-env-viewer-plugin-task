@@ -66,6 +66,7 @@ export default {
             eventId: el.id,
             visitId: el.visitId,
             groupId: el.groupId,
+            reference: el.reference,
             start: this.formatDate(el.date),
             end: this.formatDate(el.date),
             title: el.name,

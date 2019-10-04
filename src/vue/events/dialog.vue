@@ -47,6 +47,13 @@
           </md-datepicker>
         </md-list-item>
 
+        <md-list-item>
+          <md-field>
+            <label>Reference</label>
+            <md-input v-model="eventSelected.reference"></md-input>
+          </md-field>
+        </md-list-item>
+
       </md-list>
 
     </md-dialog-content>
@@ -98,6 +105,15 @@ export default {
         );
 
         eventRealNode.info.date.set(this.date);
+        if (
+          this.eventSelected.reference &&
+          this.eventSelected.reference.trim().length > 0
+        ) {
+          let value = this.eventSelected.reference.trim();
+          eventRealNode.info.reference
+            ? eventRealNode.info.reference.set(value)
+            : eventRealNode.info.add_attr("reference", value);
+        }
         if (this.callback) this.callback();
       }
 

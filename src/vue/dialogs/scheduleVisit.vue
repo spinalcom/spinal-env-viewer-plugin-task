@@ -8,6 +8,11 @@
 
       <span class="md-subheading">Schedule Visit</span>
 
+      <md-field>
+        <label>Reference</label>
+        <md-input v-model="referenceName"></md-input>
+      </md-field>
+
       <div>
 
         <md-datepicker :md-model-type="Number"
@@ -49,6 +54,7 @@ export default {
       beginDate: undefined,
       endDate: undefined,
       showDialog: true,
+      referenceName: "",
       groupId: "",
       visitType: "",
       data: []
@@ -81,7 +87,8 @@ export default {
           this.groupId,
           this.beginDate,
           this.endDate,
-          this.data
+          this.data,
+          this.referenceName
         );
       }
 

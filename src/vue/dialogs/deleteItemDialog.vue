@@ -47,25 +47,33 @@
 
         </div>
 
-        <div class="inputDiv"
-             v-if="!eventsToRemove.all">
+        <div v-if="!eventsToRemove.all">
+          <div class="inputDiv">
 
-          <div class="calendarInput">
-            <md-datepicker :md-model-type="Number"
-                           v-model="eventsToRemove.beginDate">
-              <label>From</label>
-            </md-datepicker>
+            <div class="calendarInput">
+              <md-datepicker :md-model-type="Number"
+                             v-model="eventsToRemove.beginDate">
+                <label>From</label>
+              </md-datepicker>
+            </div>
+
+            <div class="calendarInput">
+              <md-datepicker :md-model-type="Number"
+                             v-model="eventsToRemove.endDate">
+                <label>To</label>
+              </md-datepicker>
+            </div>
+
           </div>
 
-          <div class="calendarInput">
-            <md-datepicker :md-model-type="Number"
-                           v-model="eventsToRemove.endDate">
-              <label>To</label>
-            </md-datepicker>
+          <div class="referenceDiv">
+            <md-field>
+              <label>Reference</label>
+              <md-input v-model="eventsToRemove.reference"></md-input>
+            </md-field>
           </div>
 
         </div>
-
       </div>
 
     </md-dialog-content>
@@ -93,7 +101,8 @@ export default {
       eventsToRemove: {
         all: true,
         beginDate: undefined,
-        endDate: undefined
+        endDate: undefined,
+        reference: ""
       },
       removeVisit: false,
       item: null,
@@ -130,7 +139,8 @@ export default {
           this.removeVisit,
           this.removeRelatedEvent,
           this.eventsToRemove.beginDate,
-          this.eventsToRemove.endDate
+          this.eventsToRemove.endDate,
+          this.eventsToRemove.reference
         );
       }
       this.showDialog = false;
@@ -184,5 +194,9 @@ export default {
 
 .calendarInput {
   width: 45%;
+}
+
+.referenceDiv {
+  width: 95%;
 }
 </style>
