@@ -1,7 +1,7 @@
 <template>
   <div class="_content">
 
-    <div class="header md-layout">
+    <!-- <div class="header md-layout">
       <md-button class="headerBtn md-layout-item md-size-45">
         <md-icon>open_in_browser</md-icon>
         Export
@@ -11,7 +11,7 @@
         <md-icon>file_download</md-icon>
         Import
       </md-button>
-    </div>
+    </div> -->
 
     <div class="calendar">
       <vue-cal :time="false"
@@ -120,7 +120,7 @@ export default {
 
 ._content .calendar {
   width: 100%;
-  height: calc(100% - 60px);
+  height: calc(100% - 15px);
 }
 </style>
 
