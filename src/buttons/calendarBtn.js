@@ -9,8 +9,8 @@ import {
 
 
 import {
-  EQUIPMENTS_GROUP
-} from "spinal-env-viewer-room-manager/js/service";
+  groupService
+} from "spinal-env-viewer-room-manager/services/service";
 
 
 class LinkRooms extends SpinalContextApp {
@@ -25,7 +25,8 @@ class LinkRooms extends SpinalContextApp {
   }
 
   isShown(option) {
-    return option.selectedNode.type.get() === EQUIPMENTS_GROUP ? Promise
+    return option.selectedNode.type.get() === groupService.constants
+      .EQUIPMENTS_GROUP ? Promise
       .resolve(true) :
       Promise.resolve(-1);
   }
