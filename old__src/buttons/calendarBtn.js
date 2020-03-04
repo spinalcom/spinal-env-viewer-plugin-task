@@ -25,10 +25,12 @@ class LinkRooms extends SpinalContextApp {
   }
 
   isShown(option) {
-    return option.selectedNode.type.get() === groupService.constants
-      .EQUIPMENTS_GROUP ? Promise
-      .resolve(true) :
-      Promise.resolve(-1);
+    const condition = (option.selectedNode.type.get() === groupService
+        .constants.EQUIPMENTS_GROUP) ||
+      (option.selectedNode.type.get() === groupService.constants.ROOMS_GROUP)
+
+
+    return condition ? Promise.resolve(true) : Promise.resolve(-1);
   }
 
   action(option) {

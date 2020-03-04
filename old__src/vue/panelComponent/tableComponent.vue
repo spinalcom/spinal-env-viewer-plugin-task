@@ -1,3 +1,27 @@
+<!--
+Copyright 2020 SpinalCom - www.spinalcom.com
+
+This file is part of SpinalCore.
+
+Please read all of the following terms and conditions
+of the Free Software license Agreement ("Agreement")
+carefully.
+
+This Agreement is a legally binding contract between
+the Licensee (as defined below) and SpinalCom that
+sets forth the terms and conditions that govern your
+use of the Program. By installing and/or using the
+Program, you agree to abide by all the terms and
+conditions stated or referenced herein.
+
+If you do not agree to abide by these terms and
+conditions, do not demonstrate your acceptance and do
+not install or use the Program.
+You should have received a copy of the license along
+with this file. If not, see
+<http://resources.spinalcom.com/licenses.pdf>.
+-->
+
 /* eslint-disable no-debugger */
 
 <template>
@@ -33,9 +57,8 @@
               v-model="searched"
               @md-selected="onSelect">
       <md-table-toolbar>
-
         <div class="md-toolbar-section-start">
-          <h1 class="md-title">{{visitSelected.type}}</h1>
+          <h1 class="md-title">{{ visitSelected.name }}</h1>
         </div>
 
         <div class="scheduleBtn md-toolbar-section-end">
@@ -50,9 +73,7 @@
                      title="Schedule Visit">
             <md-icon>calendar_today</md-icon>
           </md-button>
-
         </div>
-
       </md-table-toolbar>
 
       <md-table-empty-state md-label="No Visits found"
@@ -66,15 +87,20 @@
         <md-table-cell md-label="Name">{{ item.name }}</md-table-cell>
 
         <md-table-cell md-label="Periodicity">
-          {{`${item.periodicity.number} ${item.periodicity.mesure}`}}
+          {{ `${item.periodicity.number} ${item.periodicity.mesure}` }}
         </md-table-cell>
 
         <md-table-cell md-label="Intervetion">
-          {{displayInterventionTime(item.intervention.number,item.intervention.mesure)}}
+          {{
+            displayInterventionTime(
+              item.intervention.number,
+              item.intervention.mesure
+            )
+          }}
         </md-table-cell>
 
         <md-table-cell md-label="Description">
-          {{displayDescription(item.description)}}
+          {{ displayDescription(item.description) }}
         </md-table-cell>
 
         <md-table-cell md-label="">
@@ -86,13 +112,11 @@
             </md-button>
 
             <md-menu-content class="menuItem">
-
               <md-menu-item @click="ManageEvents(item)">
                 <span>
                   <md-icon>notifications</md-icon>
                 </span>
-                &nbsp;
-                &nbsp;
+                &nbsp; &nbsp;
                 <span>
                   Manage events
                 </span>
@@ -102,8 +126,7 @@
                 <span>
                   <md-icon tiny>edit</md-icon>
                 </span>
-                &nbsp;
-                &nbsp;
+                &nbsp; &nbsp;
                 <span>
                   Edit Visit
                 </span>
@@ -113,23 +136,18 @@
                 <span>
                   <md-icon>delete</md-icon>
                 </span>
-                &nbsp;
-                &nbsp;
+                &nbsp; &nbsp;
                 <span>
                   Delete
                 </span>
               </md-menu-item>
-
             </md-menu-content>
           </md-menu>
         </md-table-cell>
-
       </md-table-row>
-
     </md-table>
   </md-content>
 </template>
-
 
 <script>
 const {
@@ -172,7 +190,7 @@ export default {
       spinalPanelManagerService.openPanel("createVisitDialog", {
         create: true,
         groupId: this.nodeId,
-        visitId: this.visitSelected.type
+        visitId: this.visitSelected.name
       });
     },
 
@@ -187,18 +205,18 @@ export default {
         data.push(element);
       }
 
-      ExcelManager.exportExcel(this.nodeId, this.visitSelected.type, data).then(
+      ExcelManager.exportExcel(this.nodeId, this.visitSelected.name, data).then(
         workbook => {
           spinalPanelManagerService.openPanel("confirmDialog", {
             title: "Download",
-            message: `<p>Download spinal_${this.visitSelected.type}.xlsx</p>`,
+            message: `<p>Download spinal_${this.visitSelected.name}.xlsx</p>`,
             validate: () => {
               workbook.xlsx
                 .writeBuffer()
                 .then(buffer => {
                   FileSaver.saveAs(
                     new Blob([buffer]),
-                    `spinal_${this.visitSelected.type}.xlsx`
+                    `spinal_${this.visitSelected.name}.xlsx`
                   );
                 })
                 .catch(err => console.log(err));
@@ -213,7 +231,7 @@ export default {
         spinalPanelManagerService.openPanel("confirmDialog", {
           title: "Import",
           message: `
-            <div> Do you want import in ${this.visitSelected.type} ?<div>
+            <div> Do you want import in ${this.visitSelected.name} ?<div>
 
             <div> Number of valid items : ${res.valid.length} </div>
             <div> Number of invalid items : ${res.invalid.length} </div>
@@ -226,7 +244,7 @@ export default {
                 element.name,
                 element.periodNumber,
                 element.periodMesure,
-                this.visitSelected.type,
+                this.visitSelected.name,
                 element.interventionNumber,
                 element.interventionMesure,
                 element.description
@@ -239,7 +257,7 @@ export default {
 
     getAllData() {
       return taskService
-        .getGroupVisits(this.nodeId, this.visitSelected.type)
+        .getGroupVisits(this.nodeId, this.visitSelected.name)
         .then(res => {
           if (this.allData && this.bindProcess) {
             this.allData.unbind(this.bindProcess);
@@ -310,7 +328,7 @@ export default {
       if (this.dataToSchedule.length > 0) {
         spinalPanelManagerService.openPanel("scheduleVisitDialog", {
           groupId: this.nodeId,
-          visitId: this.visitSelected.type,
+          visitId: this.visitSelected.name,
           data: this.dataToSchedule
         });
       } else {
