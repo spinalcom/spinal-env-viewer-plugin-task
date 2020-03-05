@@ -104,24 +104,6 @@ with this file. If not, see
         <md-textarea v-model="description"></md-textarea>
       </md-field>
 
-      <!-- <md-field>
-        <md-select v-model="type"
-                   name="visitType"
-                   id="visitType"
-                   placeholder="Visit Type">
-          <md-option v-for="(visit,index) in visits"
-                     :key="index"
-                     :value="visit.id">{{visit.name}}</md-option>
-        </md-select>
-      </md-field> -->
-
-      <!-- <div>
-        <span class="md-subheading">Begin Date</span>
-        <md-datepicker v-model="beginDate"
-                       :md-override-native="false"
-                       :md-disabled-dates="disablePassDate" />
-      </div> -->
-
     </md-dialog-content>
 
     <md-dialog-actions>
@@ -136,11 +118,11 @@ with this file. If not, see
 </template>
 
 <script>
-import taskService from "spinal-env-viewer-task-service";
+import spinalTaskConfigurationService from "spinal-env-viewer-task-service/build/classes/Configuration";
 
 export default {
-  name: "createVisitDialog",
-  props: ["onFinised", ""],
+  name: "createTaskDialog",
+  props: ["onFinised"],
   data() {
     this.periodicityMesures = ["day(s)", "week(s)", "month(s)", "year(s)"];
     this.interventionMesures = [
@@ -151,6 +133,8 @@ export default {
       "year(s)"
     ];
     this.visitToEditId;
+    this.callback;
+
     return {
       // visits: [],
       title: "",
@@ -161,7 +145,7 @@ export default {
       visitId: "",
       // type: "",
       // beginDate: null,
-      groupId: null,
+      configId: null,
       showDialog: true,
       create: false
     };
@@ -174,9 +158,10 @@ export default {
   methods: {
     opened(option) {
       this.create = option.create;
-      this.groupId = option.groupId;
-      this.visitId = option.visitId;
+      this.configId = option.configId;
+      // this.visitId = option.visitId;
       this.visitToEditId = option.itemId;
+      this.callback = option.callback;
 
       if (option.create) {
         this.title = "Create Visit";
@@ -204,44 +189,52 @@ export default {
     },
 
     removed(option) {
-      if (option && this.create) {
-        taskService.addVisitOnGroup(
-          this.groupId,
-          this.taskName,
-          Number(this.periodicity.number),
-          Number(this.periodicity.mesure),
-          this.visitId,
-          this.intervention.number !== ""
-            ? Number(this.intervention.number)
-            : undefined,
-          this.intervention.mesure !== ""
-            ? Number(this.intervention.mesure)
-            : undefined,
-          this.description
-        );
-      } else if (option && !this.create) {
-        let valueObj = {
-          name: this.taskName,
-          description: this.description,
-          periodicity: {
-            number: Number(this.periodicity.number),
-            mesure: Number(this.periodicity.mesure)
-          },
-          intervention: {
-            number:
-              this.intervention.number !== ""
-                ? Number(this.intervention.number)
-                : undefined,
-            mesure:
-              this.intervention.mesure !== ""
-                ? Number(this.intervention.mesure)
-                : undefined
-          }
-        };
+      if (option) {
+        if (this.create) {
+          spinalTaskConfigurationService.addTask(
+            this.configId,
+            this.taskName,
+            Number(this.periodicity.number),
+            Number(this.periodicity.mesure),
+            this.intervention.number !== ""
+              ? Number(this.intervention.number)
+              : undefined,
+            this.intervention.mesure !== ""
+              ? Number(this.intervention.mesure)
+              : undefined,
+            this.description
+          );
+        } else {
+          let valueObj = {
+            name: this.taskName,
+            description: this.description,
+            periodicity: {
+              number: Number(this.periodicity.number),
+              mesure: Number(this.periodicity.mesure)
+            },
+            intervention: {
+              number:
+                this.intervention.number !== ""
+                  ? Number(this.intervention.number)
+                  : undefined,
+              mesure:
+                this.intervention.mesure !== ""
+                  ? Number(this.intervention.mesure)
+                  : undefined
+            }
+          };
 
-        console.log(valueObj.intervention);
+          console.log(valueObj.intervention);
 
-        // taskService.editVisit(this.visitToEditId, valueObj);
+          spinalTaskConfigurationService.updateTask(
+            this.visitToEditId,
+            valueObj
+          );
+
+          // taskService.editVisit(this.visitToEditId, valueObj);
+        }
+
+        if (this.callback) this.callback();
       }
 
       this.showDialog = false;

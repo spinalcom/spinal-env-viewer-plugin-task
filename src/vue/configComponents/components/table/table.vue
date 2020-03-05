@@ -38,20 +38,60 @@ with this file. If not, see
       </div>
       <div></div>
     </div>
+
+    <div class="tableContent">
+      <table-content-component :visits="alltasks"
+                               @refresh="getAllTasks()">
+      </table-content-component>
+    </div>
+
+    <md-button @click="addTask"
+               class="md-primary md-fab md-mini md-fab-bottom-right">
+      <md-icon>add</md-icon>
+    </md-button>
+
   </div>
 </template>
 
 <script>
+import spinalTaskConfigurationService from "spinal-env-viewer-task-service/build/classes/Configuration";
+
+import TableContentComponent from "./tableContent.vue";
+
+const {
+  spinalPanelManagerService
+} = require("spinal-env-viewer-panel-manager-service");
+
 export default {
-  name: "tasktableComponent",
+  name: "taskTableComponent",
+  components: {
+    "table-content-component": TableContentComponent
+  },
   props: ["visitSelected"],
   data() {
-    return {};
+    return {
+      alltasks: []
+    };
   },
-  mounted() {},
+  mounted() {
+    this.getAllTasks();
+  },
   methods: {
     goBack() {
       this.$emit("goBack");
+    },
+    async getAllTasks() {
+      console.log("called getAllTasks");
+      this.alltasks = await spinalTaskConfigurationService.getTasks(
+        this.visitSelected.id
+      );
+    },
+    addTask() {
+      spinalPanelManagerService.openPanel("createTaskDialog", {
+        create: true,
+        configId: this.visitSelected.id,
+        callback: this.getAllTasks
+      });
     }
   }
 };
@@ -80,5 +120,10 @@ export default {
 .content .header .configName {
   font-size: 1.5em;
   text-transform: uppercase;
+}
+
+.content .tableContent {
+  width: 100%;
+  height: calc(100% - 50px);
 }
 </style>

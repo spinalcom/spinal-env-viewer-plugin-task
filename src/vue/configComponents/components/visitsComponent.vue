@@ -56,7 +56,7 @@ with this file. If not, see
 import { spinalPanelManagerService } from "spinal-env-viewer-panel-manager-service";
 
 import VisitComponent from "./visit.vue";
-import TableComponent from "./table.vue";
+import TableComponent from "./table/table.vue";
 
 export default {
   name: "visitsComponents",

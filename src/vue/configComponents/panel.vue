@@ -64,6 +64,7 @@ export default {
 ._mdContent {
   width: 100%;
   height: calc(100% - 15px);
+  overflow: hidden;
 }
 
 ._mdContent .visits {
