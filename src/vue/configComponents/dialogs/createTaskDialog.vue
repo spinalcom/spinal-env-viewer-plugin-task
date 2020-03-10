@@ -188,10 +188,10 @@ export default {
       }
     },
 
-    removed(option) {
+    async removed(option) {
       if (option) {
         if (this.create) {
-          spinalTaskConfigurationService.addTask(
+          await spinalTaskConfigurationService.addTask(
             this.configId,
             this.taskName,
             Number(this.periodicity.number),
@@ -224,9 +224,7 @@ export default {
             }
           };
 
-          console.log(valueObj.intervention);
-
-          spinalTaskConfigurationService.updateTask(
+          await spinalTaskConfigurationService.updateTask(
             this.visitToEditId,
             valueObj
           );

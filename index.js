@@ -5,8 +5,8 @@ import {
 
 
 // import CalendarBtn from "./src/buttons/calendarBtn.js";
-import TaskConfigurationBtn from "./src/buttons/configurationBtn.js"
-
+import TaskConfigurationBtn from "./src/buttons/configurationBtn.js";
+import TaskManagerBtn from "./src/buttons/manageTaskBtn.js";
 
 const SIDEBAR = "GraphManagerSideBar";
 const HEADERBAR = "GraphManagerTopBar";
@@ -14,7 +14,7 @@ const HEADERBAR = "GraphManagerTopBar";
 
 
 
-// spinalContextMenuService.registerApp(SIDEBAR, new CalendarBtn(), [3]);
+spinalContextMenuService.registerApp(SIDEBAR, new TaskManagerBtn(), [3]);
 spinalContextMenuService.registerApp(HEADERBAR, new TaskConfigurationBtn(), [
   3
 ]);

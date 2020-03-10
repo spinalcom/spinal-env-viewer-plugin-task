@@ -23,8 +23,7 @@ with this file. If not, see
 -->
 
 <template>
-  <div v-if="alltasks"
-       class="content">
+  <div class="content">
     <div class="header">
       <div class="backBtn">
         <md-button class="md-dense md-primary"
@@ -34,64 +33,21 @@ with this file. If not, see
           BACK
         </md-button>
       </div>
-      <div class="configName">
-        {{visitSelected.name}}
-      </div>
-      <div></div>
     </div>
-
-    <div class="tableContent">
-      <table-content-component :visits="alltasks"
-                               @refresh="getAllTasks">
-      </table-content-component>
-    </div>
-
-    <md-button @click="addTask"
-               class="md-primary md-fab md-mini md-fab-bottom-right">
-      <md-icon>add</md-icon>
-    </md-button>
 
   </div>
 </template>
 
 <script>
-import spinalTaskConfigurationService from "spinal-env-viewer-task-service/build/classes/Configuration";
-
-import TableContentComponent from "./tableContent.vue";
-
-const {
-  spinalPanelManagerService
-} = require("spinal-env-viewer-panel-manager-service");
-
 export default {
-  name: "taskTableComponent",
-  components: {
-    "table-content-component": TableContentComponent
-  },
-  props: ["visitSelected"],
+  name: "tableComponent",
+  props: ["data"],
   data() {
-    return {
-      alltasks: []
-    };
-  },
-  mounted() {
-    this.getAllTasks();
+    return {};
   },
   methods: {
     goBack() {
       this.$emit("goBack");
-    },
-    async getAllTasks() {
-      this.alltasks = await spinalTaskConfigurationService.getTasks(
-        this.visitSelected.id
-      );
-    },
-    addTask() {
-      spinalPanelManagerService.openPanel("createTaskDialog", {
-        create: true,
-        configId: this.visitSelected.id,
-        callback: this.getAllTasks
-      });
     }
   }
 };
@@ -101,6 +57,7 @@ export default {
 .content {
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 
 .content .header {
@@ -120,10 +77,5 @@ export default {
 .content .header .configName {
   font-size: 1.5em;
   text-transform: uppercase;
-}
-
-.content .tableContent {
-  width: 100%;
-  height: calc(100% - 50px);
 }
 </style>

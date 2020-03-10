@@ -14,20 +14,34 @@ const {
 //                              Panels                                      //
 //////////////////////////////////////////////////////////////////////////////
 
-import ConfigPanelComponents from '../vue/configComponents/panel.vue'
-
+import ConfigPanelComponents from '../vue/configComponents/panel.vue';
+import TaskPanelComponents from '../vue/tasksComponents/panel.vue';
 
 let panels = [{
-  name: "TaskConfigurationPanel",
-  vueMountComponent: vue.extend(ConfigPanelComponents),
-  panel: {
-    title: "Task Maintenance",
-    closeBehaviour: "hide"
+    name: "TaskConfigurationPanel",
+    vueMountComponent: vue.extend(ConfigPanelComponents),
+    panel: {
+      title: "Task Maintenance",
+      closeBehaviour: "hide"
+    },
+    style: {
+      height: "475px",
+      left: "400px"
+    }
   },
-  style: {
-    left: "400px"
+  {
+    name: "TaskManagementPanel",
+    vueMountComponent: vue.extend(TaskPanelComponents),
+    panel: {
+      title: "Task Management",
+      closeBehaviour: "hide"
+    },
+    style: {
+      height: "475px",
+      left: "400px"
+    }
   }
-}]
+]
 
 
 for (let index = 0; index < panels.length; index++) {

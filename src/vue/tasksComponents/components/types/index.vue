@@ -22,53 +22,70 @@ with this file. If not, see
 <http://resources.spinalcom.com/licenses.pdf>.
 -->
 
-
 <template>
-  <div class="_mdContent md-scrollbar">
-    <div class="visits">
-      <visit-component :visits="allVists"
-                       @refresh="getAllVisits"></visit-component>
-    </div>
+  <div class="content">
+    <md-content class="visits md-scrollbar"
+                v-if="types">
+
+      <div v-if="types.length === 0"
+           class="empty">
+        <div>No Type Found !!! </div>
+      </div>
+
+      <type-component v-for="(type,index) in types"
+                      :key="index"
+                      :type="type"
+                      @select="selectType">
+      </type-component>
+
+    </md-content>
   </div>
 </template>
 
 <script>
-import VisitsComponent from "./components/visits/visitsComponent.vue";
-
-import spinalTaskConfigurationService from "spinal-env-viewer-task-service/build/classes/Configuration";
+import TypeComponent from "./type.vue";
 
 export default {
-  name: "ConfigurationTaskPanel",
+  name: "typesComponent",
+  props: ["types"],
   components: {
-    "visit-component": VisitsComponent
+    "type-component": TypeComponent
   },
   data() {
-    return {
-      allVists: []
-    };
-  },
-  mounted() {
-    this.getAllVisits();
+    return {};
   },
   methods: {
-    opened() {},
-    async getAllVisits() {
-      this.allVists = await spinalTaskConfigurationService.getConfigurations();
+    selectType(type) {
+      this.$emit("select", type);
     }
   }
 };
 </script>
 
 <style scoped>
-._mdContent {
-  width: 100%;
-  height: calc(100% - 15px);
-  overflow: hidden;
-}
-
-._mdContent .visits {
+.content,
+.content .visits {
   width: 100%;
   height: 100%;
-  overflow: hidden;
+}
+
+.content .visits {
+  background: transparent;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.content .visits .empty {
+  width: 100%;
+  height: 100%;
+  font-size: 1.5em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.content .visits .empty div {
+  margin-bottom: 10px;
 }
 </style>

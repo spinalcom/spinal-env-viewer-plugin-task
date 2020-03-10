@@ -24,8 +24,8 @@ with this file. If not, see
 
 <template>
   <div class="content">
-    <div class="visits"
-         v-if="!visitSelected">
+    <md-content class="visits md-scrollbar"
+                v-if="!visitSelected">
 
       <div v-if="visits.length === 0"
            class="empty">
@@ -35,13 +35,15 @@ with this file. If not, see
       <visit-component v-for="(visit,index) in visits"
                        :key="index"
                        :visit="visit"
-                       @select="selectVisit"></visit-component>
+                       @select="selectVisit"
+                       @edit="editVisit"
+                       @remove="removeVisit"></visit-component>
 
       <md-button @click="createVisitContextDialog"
                  class="md-primary md-fab md-mini md-fab-bottom-right">
         <md-icon>add</md-icon>
       </md-button>
-    </div>
+    </md-content>
 
     <div v-else
          class="tasks">
@@ -54,9 +56,10 @@ with this file. If not, see
 
 <script>
 import { spinalPanelManagerService } from "spinal-env-viewer-panel-manager-service";
+import { SpinalGraphService } from "spinal-env-viewer-graph-service";
 
 import VisitComponent from "./visit.vue";
-import TableComponent from "./table/table.vue";
+import TableComponent from "../table/table.vue";
 
 export default {
   name: "visitsComponents",
@@ -75,28 +78,55 @@ export default {
   methods: {
     createVisitContextDialog() {
       spinalPanelManagerService.openPanel("createTaskConfigurationDialog", {
-        callback: () => {
-          this.$emit("refresh");
-        }
+        callback: this.refresh
       });
     },
+
     selectVisit(visit) {
       this.visitSelected = visit;
+    },
+    editVisit(visit) {
+      spinalPanelManagerService.openPanel("createTaskConfigurationDialog", {
+        id: visit.id,
+        name: visit.name,
+        callback: this.refresh,
+        edit: true
+      });
+    },
+
+    removeVisit(visit) {
+      spinalPanelManagerService.openPanel("confirmDialog", {
+        nodeId: visit.id,
+        title: "Delete",
+        message:
+          "Are you sure to remove this configuration ? It can't be undo.",
+        callback: this.refresh
+      });
     },
 
     goBack() {
       this.visitSelected = undefined;
+    },
+
+    refresh() {
+      this.$emit("refresh");
     }
   }
 };
 </script>
 
-<style lang="">
+<style scoped>
 .content,
 .content .visits,
 .content .tasks {
   width: 100%;
   height: 100%;
+}
+
+.content .visits {
+  background: transparent;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .content .visits .empty {

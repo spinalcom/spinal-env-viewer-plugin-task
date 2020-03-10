@@ -87,6 +87,11 @@ with this file. If not, see
                 <span>Edit Visit</span>
               </md-menu-item>
 
+              <md-menu-item @click="deleteItem(item)">
+                <md-icon>delete</md-icon>
+                <span>Delete</span>
+              </md-menu-item>
+
               <!-- <md-menu-item @click="deleteItem(item)">
                 <span>
                   <md-icon>delete</md-icon>
@@ -153,6 +158,15 @@ export default {
       });
     },
 
+    deleteItem(item) {
+      spinalPanelManagerService.openPanel("confirmDialog", {
+        nodeId: item.id,
+        title: "Delete",
+        message: "Are you sure to remove this task ? It can't be undo.",
+        callback: this.refresh
+      });
+    },
+
     searchOnTable() {
       if (this.search.trim().length === 0) this.searched = this.visits;
       else {
@@ -170,14 +184,15 @@ export default {
   },
   watch: {
     visits() {
-      console.log("hello world");
+      console.log("hello");
+      console.log("visits", this.visits);
       this.searchOnTable();
     }
   }
 };
 </script>
 
-<style>
+<style scoped>
 .content {
   width: 100%;
   height: 100%;

@@ -25,39 +25,33 @@ with this file. If not, see
 <template>
   <md-dialog :md-active.sync="showDialog"
              @md-closed="closeDialog(false)">
-    <md-dialog-title>Create task Configuration</md-dialog-title>
+    <md-dialog-title>{{title}}</md-dialog-title>
 
     <md-dialog-content>
-      <md-field>
-        <label>Configuration Name</label>
-        <md-input v-model="name"
-                  required></md-input>
-      </md-field>
+      <div class="message">{{message}}</div>
     </md-dialog-content>
 
     <md-dialog-actions>
       <md-button class="md-primary"
-                 @click="closeDialog(false)">Close</md-button>
+                 @click="closeDialog(false)">No</md-button>
       <md-button class="md-primary"
-                 @click="closeDialog(true)"
-                 :disabled="disabled()">Save</md-button>
+                 @click="closeDialog(true)">Yes</md-button>
     </md-dialog-actions>
   </md-dialog>
 </template>
 
 <script>
-import spinalTaskConfigurationService from "spinal-env-viewer-task-service/build/classes/Configuration";
-
+import { SpinalGraphService } from "spinal-env-viewer-graph-service";
 export default {
-  name: "createTaskConfigurationDialog",
+  name: "confirmDialog",
   props: ["onFinised"],
   data() {
-    this.edit = false;
     return {
-      name: "",
-      callback: null,
-      id: null,
-      showDialog: true
+      id: "",
+      title: "",
+      message: "",
+      showDialog: true,
+      callback: null
     };
   },
   mounted() {
@@ -67,25 +61,15 @@ export default {
   },
   methods: {
     opened(option) {
-      this.name = option.name ? option.name : "";
-      this.id = option.id;
-      this.edit = option.edit ? option.edit : false;
+      this.id = option.nodeId;
+      this.title = option.title;
+      this.message = option.message;
       this.callback = option.callback;
     },
 
     async removed(option) {
       if (option) {
-        if (this.edit) {
-          await spinalTaskConfigurationService.editConfiguration(
-            this.id,
-            this.name.trim()
-          );
-        } else {
-          await spinalTaskConfigurationService.addConfiguration(
-            this.name.trim()
-          );
-        }
-
+        await SpinalGraphService.removeFromGraph(this.id);
         if (this.callback) this.callback();
       }
 
@@ -96,10 +80,6 @@ export default {
       if (typeof this.onFinised === "function") {
         this.onFinised(closeResult);
       }
-    },
-
-    disabled() {
-      return !this.name || this.name.trim().length === 0;
     }
   }
 };
