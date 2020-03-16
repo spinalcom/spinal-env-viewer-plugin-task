@@ -11,8 +11,11 @@ import vue from "vue";
 
 
 import CreateTaskConfigurationDialog from "../vue/configComponents/dialogs/createConfiguration.vue";
-import CreateTaskDialog from '../vue/configComponents/dialogs/createTaskDialog.vue'
-import ConfirmDialog from "../vue/configComponents/dialogs/confirmDialog.vue"
+import CreateTaskDialog from '../vue/configComponents/dialogs/createTaskDialog.vue';
+import ConfirmDialog from "../vue/configComponents/dialogs/confirmDialog.vue";
+import ConfigTaskDialog from '../vue/tasksComponents/components/fabs/dialogs/configTasks.vue'
+
+import GenerateEventDialog from '../vue/tasksComponents/components/fabs/dialogs/generateEventDialog.vue';
 
 const dialogs = [{
     name: "createTaskConfigurationDialog",
@@ -26,6 +29,15 @@ const dialogs = [{
   }, {
     name: "confirmDialog",
     vueMountComponent: vue.extend(ConfirmDialog),
+    parentContainer: document.body
+  }, {
+    name: "generateEventDialog",
+    vueMountComponent: vue.extend(GenerateEventDialog),
+    parentContainer: document.body
+  },
+  {
+    name: "configTaskDialog",
+    vueMountComponent: vue.extend(ConfigTaskDialog),
     parentContainer: document.body
   }
 ];

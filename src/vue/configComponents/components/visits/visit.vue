@@ -103,6 +103,7 @@ export default {
   flex-wrap: nowrap;
   padding: 10px;
   margin: 10px;
+  border: 1px dashed grey;
 }
 
 .md-content:hover {

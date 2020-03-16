@@ -121,10 +121,13 @@ export default {
 .content .tasks {
   width: 100%;
   height: 100%;
+  margin: auto;
 }
 
 .content .visits {
   background: transparent;
+  display: flex;
+  flex-wrap: wrap;
   overflow-x: hidden;
   overflow-y: auto;
 }

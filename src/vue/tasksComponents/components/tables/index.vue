@@ -35,12 +35,21 @@ with this file. If not, see
       </div>
     </div>
 
+    <div class="table">
+      <table-content-component :data="data"></table-content-component>
+    </div>
+
   </div>
 </template>
 
 <script>
+import TableContentComponent from "./table.vue";
+
 export default {
   name: "tableComponent",
+  components: {
+    "table-content-component": TableContentComponent
+  },
   props: ["data"],
   data() {
     return {};
@@ -77,5 +86,11 @@ export default {
 .content .header .configName {
   font-size: 1.5em;
   text-transform: uppercase;
+}
+
+.content .table {
+  width: 100%;
+  height: calc(100% - 50px);
+  overflow: hidden;
 }
 </style>

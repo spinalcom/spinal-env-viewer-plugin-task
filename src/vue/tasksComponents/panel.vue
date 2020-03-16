@@ -30,7 +30,7 @@ with this file. If not, see
     </types-component>
 
     <table-component v-if="itemDisplayed && appState === STATES.normal && visiblePage === pages.table"
-                     :data="[]"
+                     :data="itemDisplayed"
                      @goBack="goBack">
     </table-component>
 
