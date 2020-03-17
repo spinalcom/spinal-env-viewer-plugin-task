@@ -62,12 +62,17 @@ export default {
   data() {
     this.buttons = [
       {
+        icon: "notifications",
+        text: "Manage Events",
+        action: () => {}
+      },
+      {
         icon: "settings_applications",
         text: "Tasks Configuration",
         action: this.openConfigurationDialogs
       },
       {
-        icon: "notifications",
+        icon: "date_range",
         text: "Generate Events",
         action: this.generateEvent
       }

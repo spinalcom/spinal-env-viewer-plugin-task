@@ -110,6 +110,7 @@ with this file. If not, see
 
 <script>
 import controllers from "../controllers/controllers.js";
+import { spinalTaskService } from "spinal-env-viewer-task-service";
 
 export default {
   name: "generateEventsDialog",
@@ -139,21 +140,22 @@ export default {
 
     removed(option) {
       if (option) {
-        console.log(
-          "this.allItemsSelected",
-          this.allItemsSelected,
-          "this.configurationSelected",
-          this.configurationSelected,
-          "this.taskSelected",
-          this.taskSelected,
-          "this.beginDate",
-          this.beginDate,
-          "this.endDate",
-          this.endDate
-        );
-
         const argBegin = new Date(this.beginDate).getTime();
         const argEnd = new Date(this.endDate).getTime();
+
+        for (const item of this.allItemsSelected) {
+          console.log("name", item.name, item.id);
+          for (const task of this.taskSelected) {
+            console.log("task", task);
+            spinalTaskService.generateEvents(
+              this.configurationSelected,
+              task,
+              item.id,
+              argBegin,
+              argEnd
+            );
+          }
+        }
       }
 
       this.showDialog = false;

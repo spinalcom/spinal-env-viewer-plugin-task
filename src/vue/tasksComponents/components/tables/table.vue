@@ -101,14 +101,14 @@ with this file. If not, see
           </td>
           <td>{{ props.item.name }}</td>
           <td>{{ props.item.type }}</td>
-          <td>
+          <!-- <td>
             <v-icon class="mr-2"
                     @click="ManageEvents(props.item)"
                     title="manage Events">
               notifications
-              <!-- date_range -->
+              
             </v-icon>
-          </td>
+          </td> -->
 
         </template>
       </v-data-table>
@@ -150,11 +150,11 @@ export default {
       {
         text: "Type",
         value: "type"
-      },
-      {
-        text: "Action",
-        value: "action"
       }
+      // {
+      //   text: "Action",
+      //   value: "action"
+      // }
     ];
 
     return {

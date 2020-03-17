@@ -35,7 +35,7 @@ with this file. If not, see
 <script>
 import VisitsComponent from "./components/visits/visitsComponent.vue";
 
-import spinalTaskConfigurationService from "spinal-env-viewer-task-service/build/classes/Configuration";
+import { spinalTaskConfigurationService } from "spinal-env-viewer-task-service";
 
 export default {
   name: "ConfigurationTaskPanel",

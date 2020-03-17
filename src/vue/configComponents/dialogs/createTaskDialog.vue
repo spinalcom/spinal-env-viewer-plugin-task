@@ -118,7 +118,7 @@ with this file. If not, see
 </template>
 
 <script>
-import spinalTaskConfigurationService from "spinal-env-viewer-task-service/build/classes/Configuration";
+import { spinalTaskConfigurationService } from "spinal-env-viewer-task-service";
 
 export default {
   name: "createTaskDialog",
