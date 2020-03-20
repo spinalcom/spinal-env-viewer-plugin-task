@@ -14,8 +14,10 @@ import CreateTaskConfigurationDialog from "../vue/configComponents/dialogs/creat
 import CreateTaskDialog from '../vue/configComponents/dialogs/createTaskDialog.vue';
 import ConfirmDialog from "../vue/configComponents/dialogs/confirmDialog.vue";
 import ConfigTaskDialog from '../vue/tasksComponents/components/fabs/dialogs/configTasks.vue'
-
 import GenerateEventDialog from '../vue/tasksComponents/components/fabs/dialogs/generateEventDialog.vue';
+import ManageEventsDialog from '../vue/tasksComponents/components/fabs/dialogs/manageEvents.vue';
+import EventDetail from '../vue/tasksComponents/components/fabs/dialogs/eventDetail.vue';
+
 
 const dialogs = [{
     name: "createTaskConfigurationDialog",
@@ -38,6 +40,14 @@ const dialogs = [{
   {
     name: "configTaskDialog",
     vueMountComponent: vue.extend(ConfigTaskDialog),
+    parentContainer: document.body
+  }, {
+    name: "ManageEventsDialog",
+    vueMountComponent: vue.extend(ManageEventsDialog),
+    parentContainer: document.body
+  }, {
+    name: "EventDetail",
+    vueMountComponent: vue.extend(EventDetail),
     parentContainer: document.body
   }
 ];

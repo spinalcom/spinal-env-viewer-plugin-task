@@ -64,7 +64,7 @@ export default {
       {
         icon: "notifications",
         text: "Manage Events",
-        action: () => {}
+        action: this.manageEvents
       },
       {
         icon: "settings_applications",
@@ -93,6 +93,17 @@ export default {
 
     openConfigurationDialogs() {
       spinalPanelManagerService.openPanel("configTaskDialog", {});
+    },
+
+    manageEvents() {
+      if (this.itemsSelected && this.itemsSelected.length > 0) {
+        spinalPanelManagerService.openPanel(
+          "ManageEventsDialog",
+          this.itemsSelected
+        );
+      } else {
+        alert("no item selected !!");
+      }
     }
   }
 };

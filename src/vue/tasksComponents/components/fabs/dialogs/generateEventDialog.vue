@@ -144,9 +144,7 @@ export default {
         const argEnd = new Date(this.endDate).getTime();
 
         for (const item of this.allItemsSelected) {
-          console.log("name", item.name, item.id);
           for (const task of this.taskSelected) {
-            console.log("task", task);
             spinalTaskService.generateEvents(
               this.configurationSelected,
               task,
@@ -178,7 +176,7 @@ export default {
 
 <style scoped>
 .dialog {
-  width: 800px;
+  width: 100%;
   height: 700px;
 }
 
