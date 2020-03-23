@@ -24,17 +24,50 @@ with this file. If not, see
 
 <template>
   <div class="content">
-    hello
+    <md-list>
+
+      <md-list-item>
+        <md-datepicker class="md-primary"
+                       v-model="selectedDate"
+                       :md-model-type="Number"
+                       :md-disabled-dates="disablePastDate">
+          <label>Report to</label>
+        </md-datepicker>
+      </md-list-item>
+
+      <md-list-item>
+        <md-button class="md-accent">
+          <md-icon>close</md-icon>
+          Cancel this event
+        </md-button>
+      </md-list-item>
+
+    </md-list>
+
   </div>
 </template>
 
 <script>
 export default {
   name: "actionsComponent",
-  data() {
-    return {};
+  props: {
+    itemSelected: {}
   },
-  methods: {}
+  data() {
+    return {
+      selectedDate: null
+    };
+  },
+  methods: {
+    disablePastDate(date) {
+      return date <= Date.now();
+    }
+  },
+  watch: {
+    itemSelected() {
+      this.selectedDate = this.itemSelected.date;
+    }
+  }
 };
 </script>
 
@@ -42,5 +75,8 @@ export default {
 .content {
   width: 100%;
   height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

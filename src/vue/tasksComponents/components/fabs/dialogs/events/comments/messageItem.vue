@@ -57,7 +57,7 @@ export default {
   border-radius: 15px;
   display: flex;
   flex-direction: column;
-  background-color: #f1f1f1;
+  background-color: grey;
   padding: 15px;
   font-size: 1.2em;
   margin-bottom: 20px;
@@ -71,15 +71,18 @@ export default {
 }
 
 .messageContainer .header .userName {
+  color: #000;
   font-weight: bold;
+  text-transform: capitalize;
 }
 
 .messageContainer .header .time {
-  color: #999;
+  color: #000;
   font-size: 0.8em;
 }
 
 .messageContainer .content {
   text-align: justify;
+  word-break: break-all;
 }
 </style>

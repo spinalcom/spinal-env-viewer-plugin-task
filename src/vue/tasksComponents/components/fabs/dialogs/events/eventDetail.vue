@@ -158,15 +158,16 @@ export default {
   height: 100%;
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
 }
 
 .dialog .dialogContainer .comments {
-  width: 80%;
+  width: 60%;
   height: 100%;
 }
 
 .dialog .dialogContainer .actions {
-  width: 20%;
+  width: 39%;
   height: 100%;
 }
 

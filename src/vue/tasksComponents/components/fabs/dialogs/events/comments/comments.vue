@@ -25,6 +25,8 @@ with this file. If not, see
 <template>
   <div class="content">
     <v-card v-if="itemSelected"
+            flat
+            dark
             class="messageCard">
 
       <!-- <v-card-title class="vCardTitle">
@@ -44,7 +46,7 @@ with this file. If not, see
           No comment
         </div>
 
-        <div class="commentContainer"
+        <div class="commentContainer md-scrollbar"
              v-if="messagesSended.length > 0">
           <message-item v-for="(m,index) in messagesSended"
                         :key="index"
@@ -135,6 +137,7 @@ export default {
 .content .messageCard {
   width: 100%;
   height: 100%;
+  border: 1px dashed grey;
 }
 
 /* .content .vCardTitle {
