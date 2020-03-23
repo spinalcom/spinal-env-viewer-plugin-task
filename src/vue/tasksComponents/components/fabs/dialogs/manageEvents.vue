@@ -37,7 +37,7 @@ with this file. If not, see
         <span class="md-title">My Title</span>
       </md-app-toolbar> -->
 
-        <md-app-drawer class="app-drawer-div"
+        <md-app-drawer class="app-drawer-div md-scrollbar"
                        md-permanent="full">
           <!-- <md-toolbar class="md-transparent"
                       md-elevation="0">
@@ -50,7 +50,10 @@ with this file. If not, see
                           @click="selectItem(item)"
                           :class="{'isSelect' : isSelected(item.id)}"
                           class="sidebar-item">
+
+              <md-tooltip md-direction="top">{{item.name}}</md-tooltip>
               <span class="md-list-item-text">{{item.name}}</span>
+
             </md-list-item>
           </md-list>
         </md-app-drawer>
@@ -186,14 +189,17 @@ export default {
     async SeeEvent() {
       this.events = [];
       let calendarComponent = this.$refs["calendarRef"];
-      let eventsPromise = this.taskSelected.map(taskId => {
-        console.log("taskId", taskId);
+      let eventsPromise = this.taskSelected.map(async taskId => {
+        let values = await calendarComponent.getEvents(
+          this.itemSelected,
+          taskId
+        );
 
-        return calendarComponent.getEvents(this.itemSelected, taskId);
+        return values;
       });
 
       let res = await Promise.all(eventsPromise);
-      // console.log(res);
+
       let events = [];
       for (const data of res) {
         // console.log("data", data);

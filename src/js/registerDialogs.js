@@ -16,7 +16,7 @@ import ConfirmDialog from "../vue/configComponents/dialogs/confirmDialog.vue";
 import ConfigTaskDialog from '../vue/tasksComponents/components/fabs/dialogs/configTasks.vue'
 import GenerateEventDialog from '../vue/tasksComponents/components/fabs/dialogs/generateEventDialog.vue';
 import ManageEventsDialog from '../vue/tasksComponents/components/fabs/dialogs/manageEvents.vue';
-import EventDetail from '../vue/tasksComponents/components/fabs/dialogs/eventDetail.vue';
+import EventDetail from '../vue/tasksComponents/components/fabs/dialogs/events/eventDetail.vue';
 
 
 const dialogs = [{
