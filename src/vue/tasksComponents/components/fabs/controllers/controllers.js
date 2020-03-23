@@ -1,4 +1,6 @@
-import spinalTaskConfigurationService from "spinal-env-viewer-task-service/src/classes/Configuration.js";
+import {
+  spinalTaskConfigurationService
+} from "spinal-env-viewer-task-service";
 
 
 export default {
