@@ -55,10 +55,16 @@ with this file. If not, see
           <md-select v-model="taskSelected"
                      name="tasks"
                      id="tasks"
+                     @md-selected="selectAll"
                      multiple>
             <md-option v-if="!tasksDiplayed || tasksDiplayed.length === 0"
                        :value="''"
                        disabled>No Task</md-option>
+            <!-- 
+            <md-option class="selectAll"
+                       v-if="tasksDiplayed && tasksDiplayed.length > 0">
+              All
+            </md-option> -->
 
             <md-option class="taskOption"
                        v-for="(task,index) in tasksDiplayed"
@@ -70,8 +76,30 @@ with this file. If not, see
         </md-field>
       </div>
 
-      <div class="md-layout md-gutter calendar">
-        <div class="md-layout-item beginCalendar">
+      <div class="calendar">
+
+        <div class="beginCalendar">
+          <md-datepicker v-model="beginDate">
+            <label>Select date</label>
+          </md-datepicker>
+        </div>
+
+        <div class="repeat">
+          <md-checkbox v-model="repeatEvent"
+                       class="md-primary">Repeat Event</md-checkbox>
+        </div>
+
+        <div class="endCalendar"
+             v-if="repeatEvent">
+          <md-datepicker v-model="endDate">
+            <label>End date</label>
+          </md-datepicker>
+        </div>
+
+      </div>
+
+      <!-- <div class="md-layout md-gutter calendar">
+        <div class="beginCalendar">
           <div class="title font-weight-thin">
             Begin date
           </div>
@@ -83,7 +111,7 @@ with this file. If not, see
                          :reactive="true"></v-date-picker>
         </div>
 
-        <div class="md-layout-item endCalendar">
+        <div class="endCalendar">
           <div class="title font-weight-thin">
             End date
           </div>
@@ -94,7 +122,7 @@ with this file. If not, see
                          :landscape="false"
                          :reactive="true"></v-date-picker>
         </div>
-      </div>
+      </div> -->
 
     </md-dialog-content>
 
@@ -102,6 +130,7 @@ with this file. If not, see
       <md-button class="md-primary"
                  @click="closeDialog(false)">Cancel</md-button>
       <md-button class="md-primary"
+                 :disabled="disabled()"
                  @click="closeDialog(true)">Submit</md-button>
     </md-dialog-actions>
   </md-dialog>
@@ -124,7 +153,7 @@ export default {
       configurationSelected: "",
       tasksDiplayed: [],
       taskSelected: [],
-
+      repeatEvent: false,
       beginDate: new Date().toISOString().substr(0, 10),
       endDate: new Date().toISOString().substr(0, 10)
     };
@@ -141,7 +170,9 @@ export default {
     removed(option) {
       if (option) {
         const argBegin = new Date(this.beginDate).getTime();
-        const argEnd = new Date(this.endDate).getTime();
+        let argEnd = new Date(this.endDate).getTime();
+
+        if (!this.repeatEvent) argEnd = argBegin;
 
         for (const item of this.allItemsSelected) {
           for (const task of this.taskSelected) {
@@ -163,6 +194,24 @@ export default {
       if (typeof this.onFinised === "function") {
         this.onFinised(closeResult);
       }
+    },
+    selectAll(event) {
+      // const index = event.indexOf(false);
+      // if (index !== -1) {
+      //   console.log(index);
+      //   this.taskSelected = this.tasksDiplayed.map(el => el.id);
+      //   this.taskSelected.push(false);
+      // }
+    },
+    disabled() {
+      const argBegin = new Date(this.beginDate).getTime();
+      const argEnd = new Date(this.endDate).getTime();
+
+      if (!this.repeatEvent) {
+        return this.beginDate !== undefined;
+      }
+
+      return argBegin > argEnd;
     }
   },
   watch: {
@@ -176,8 +225,8 @@ export default {
 
 <style scoped>
 .dialog {
-  width: 100%;
-  height: 700px;
+  width: 400px;
+  height: 500px;
 }
 
 .dialog .dialoContainer {
@@ -192,19 +241,26 @@ export default {
   height: 60px;
 }
 
+.dialog .dialoContainer .taskSelect .selectAll {
+  border-bottom: 1px dashed grey;
+  background: grey;
+}
+
 .dialog .dialoContainer .calendar {
   width: 100%;
   height: calc(100% - 144px);
   margin: 0px;
   padding: 0px;
-  display: flex;
-  justify-content: space-between;
+  /* display: flex; */
+  /* justify-content: space-between; */
 }
 
 .dialog .dialoContainer .calendar .beginCalendar,
-.dialog .dialoContainer .calendar .endCalendar {
-  width: 98%;
-  padding: 0px;
+.dialog .dialoContainer .calendar .endCalendar,
+.dialog .dialoContainer .calendar .repeat {
+  width: 100%;
+  height: 60px;
+  margin-top: 15px;
   /* display: flex;
   justify-content: space-between; */
   /* padding-left: 20px; */
@@ -216,7 +272,7 @@ export default {
   flex-direction: row;
 }
 
-.dialog .dialoContainer .calendar .beginCalendar .title,
+/* .dialog .dialoContainer .calendar .beginCalendar .title,
 .dialog .dialoContainer .calendar .endCalendar .title {
   width: 100%;
   height: 10%;
@@ -229,10 +285,23 @@ export default {
 .dialog .dialoContainer .calendar .endCalendar .vCalendar {
   width: 98% !important;
   height: 90%;
-}
+} */
 </style>
 
 <style>
+.dialog .dialoContainer .calendar .md-icon {
+  display: none;
+}
+
+.dialog .dialoContainer .calendar .md-input {
+  padding-left: 0px;
+  margin-left: 0px;
+}
+
+.dialog .dialoContainer .calendar .md-field > .md-icon ~ label {
+  left: 0px;
+}
+
 .dialog .dialoContainer .calendar .v-card {
   box-shadow: none !important;
   border: 1px dashed grey;

@@ -113,13 +113,13 @@ export default {
           });
       }
     },
-    getMessage() {
+
+    async getMessage() {
       if (this.itemSelected) {
-        utilities.getMessage(this.itemSelected.id).then(messages => {
-          this.messagesSended = messages;
-        });
+        this.messagesSended = await utilities.getMessage(this.itemSelected.id);
       }
     },
+
     getMessageOwner(userId) {
       let found = this.users.find(el => el.id == userId);
       return found ? found.name : "anonyme";

@@ -23,54 +23,17 @@ with this file. If not, see
 -->
 
 <template>
-  <md-content class="mdContent"
-              @click="selectType">
-    <md-tooltip md-direction="top">{{type}}</md-tooltip>
-    <div class="text">
-      {{type}}
-    </div>
+  <div>
 
-  </md-content>
+  </div>
 </template>
-
 
 <script>
 export default {
-  name: "typeComponent",
-  props: ["type"],
+  name: "dynamic-table",
   data() {
     return {};
   },
-  methods: {
-    selectType() {
-      this.$emit("select", this.type);
-    }
-  }
+  methods: {}
 };
 </script>
-
-<style scoped>
-.mdContent {
-  width: 45%;
-  height: 150px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 10px;
-  background-color: transparent;
-  border: 1px solid gray !important;
-}
-
-.mdContent:hover {
-  background-color: gray;
-  cursor: pointer;
-}
-
-.mdContent .text {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding-left: 10px;
-  padding-right: 10px;
-}
-</style>

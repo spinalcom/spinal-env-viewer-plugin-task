@@ -63,13 +63,20 @@ export default {
 </script>
 
 <style scoped>
-.content,
-.content .visits {
+.content {
   width: 100%;
   height: 100%;
 }
 
 .content .visits {
+  width: calc(100% - 40px);
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding-left: 20px;
+  padding-right: 20px;
   background: transparent;
   overflow-x: hidden;
   overflow-y: auto;

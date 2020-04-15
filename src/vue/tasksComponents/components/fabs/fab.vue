@@ -67,14 +67,14 @@ export default {
         action: this.manageEvents
       },
       {
-        icon: "settings_applications",
-        text: "Tasks Configuration",
-        action: this.openConfigurationDialogs
-      },
-      {
         icon: "date_range",
         text: "Generate Events",
         action: this.generateEvent
+      },
+      {
+        icon: "settings_applications",
+        text: "Tasks Configuration",
+        action: this.openConfigurationDialogs
       }
     ];
     return {};
