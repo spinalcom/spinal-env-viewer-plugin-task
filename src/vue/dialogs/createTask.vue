@@ -58,19 +58,22 @@ with this file. If not, see
 
           <div class="dates">
             <div class="begin">
-              <datetime v-model="event.startDate"
+              <datetime :format="'dd/MM/yyyy HH:mm'"
+                        v-model="event.startDate"
                         :min-datetime="startDateMin"
                         :title="'Start date'"
                         :type="'datetime'"
                         :input-id="'startDate'"
-                        :input-style="beginInputStyle">
+                        :input-style="beginInputStyle"
+                        :use12-hour="false">
                 <label for="startDate"
                        slot="before">Start date</label>
               </datetime>
             </div>
 
             <div class="end">
-              <datetime v-model="event.endDate"
+              <datetime :format="'dd/MM/yyyy HH:mm'"
+                        v-model="event.endDate"
                         :min-datetime="endDateMin"
                         :max-datetime="endDateMax"
                         :title="'End date'"
@@ -122,10 +125,11 @@ with this file. If not, see
 
             <div class="repeatEnd md-layout-item md-size-100"
                  v-if="event.repeat">
-              <datetime v-model="event.repeatEnd"
+              <datetime :format="'dd/MM/yyyy'"
+                        v-model="event.repeatEnd"
                         :min-datetime="repeatEndMin"
                         :title="'repeat until'"
-                        :type="'datetime'"
+                        :type="'date'"
                         :input-id="'endDate'"
                         :input-style="beginInputStyle">
                 <label for="endDate"
@@ -202,8 +206,8 @@ export default {
       nodeInfo: undefined,
       // repeatOnce: true,
       startDateMin: moment().toISOString(),
-      endDateMin: null,
-      endDateMax: null,
+      endDateMin: moment().add(1, "h").toISOString(),
+      endDateMax: moment(new Date().setHours(23, 59, 59, 999)).toISOString(),
       repeatEndMin: null,
       repeatEndMax: null,
       event: {
@@ -385,6 +389,13 @@ export default {
       this.event.endDate = moment(this.event.startDate)
         .add(1, "h")
         .toISOString();
+    },
+    "event.repeat": function () {
+      if (this.event.repeat) {
+        this.event.repeatEnd = moment(this.event.endDate)
+          .add(31, "d")
+          .toISOString();
+      }
     },
   },
 };

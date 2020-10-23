@@ -98,7 +98,7 @@ with this file. If not, see
       <md-content class="notes md-scrollbar">
         <message-component :nodeInfo="nodeInfo"></message-component>
       </md-content>
-      <div class="logs"></div>
+      <!-- <div class="logs"></div> -->
     </div>
 
   </md-content>
@@ -136,13 +136,13 @@ export default {
   },
   mounted() {
     EventBus.$on(EVENT_TYPES.UPDATED, (event) => {
-      if (this.event.id === event.id) {
+      if (this.event && this.event.id === event.id) {
         this.event = event;
       }
     });
 
     EventBus.$on(EVENT_TYPES.DELETED, (id) => {
-      if (this.event.id === id) {
+      if (this.event && this.event.id === id) {
         this.event = undefined;
       }
     });
@@ -197,22 +197,23 @@ export default {
 
     cancelEvent() {
       spinalPanelManagerService.openPanel("confirmDialog", {
-        title: "Delete",
-        message: "Do you want to remove this event ?",
-        callback: (res) => {
-          if (res) {
-            SpinalEventService.removeEvent(this.event.id).then((result) => {
-              EventBus.$emit(EVENT_TYPES.DELETED, this.event.id);
-              this.event = undefined;
-            });
-          }
-        },
+        event: this.event,
+        // title: "Delete",
+        // message: "Do you want to remove this event ?",
+        // callback: (res) => {
+        //   if (res) {
+        //     SpinalEventService.removeEvent(this.event.id).then((result) => {
+        //       EventBus.$emit(EVENT_TYPES.DELETED, this.event.id);
+        //       this.event = undefined;
+        //     });
+        //   }
+        // },
       });
     },
   },
   filters: {
     formatDate: (date) => {
-      return moment(date).format("MMMM Do YYYY, h:mm:ss a");
+      return moment(date).format("MMMM Do YYYY, HH:mm");
     },
     // periodicityFilter: (periodicity) => {
     //   if (periodicity >= Period.day && periodicity < Period.week) {
@@ -299,17 +300,19 @@ export default {
 
 .event_container .notes_logs {
   width: 100%;
-  height: 48%;
+  height: 50%;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  border: 1px solid grey;
 }
 
 .event_container .notes_logs .notes {
-  width: 50%;
-  height: 100%;
+  width: 90%;
+  height: 99%;
   overflow: auto;
   background-color: transparent;
-  border: 1px solid gray;
+  /* padding: 5px; */
+  /* border: 1px solid gray; */
 }
 
 .event_container .notes_logs .logs {

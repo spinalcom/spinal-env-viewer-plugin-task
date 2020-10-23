@@ -83,15 +83,16 @@ export default {
 </script>
 
 <style scoped>
-.calendar_container {
+/* .calendar_container {
   width: 99%;
   height: 99%;
   margin: auto;
-}
+} */
 </style>
 
+
 <style>
-/** VueCal CSS  */
+/*
 .vuecal__weekdays-headings {
   border-bottom: 1px solid #ddd;
   margin-bottom: -1px;
@@ -345,7 +346,7 @@ export default {
 .vuecal__event {
   color: #fff;
   font-weight: bold;
-  /* background-color: #448aff; */
+  background-color: #448aff; 
   position: relative;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
@@ -992,7 +993,7 @@ export default {
   .vuecal__cell-content {
   border-color: #448aff;
 }
-/** Css Added */
+
 .vuecal__event {
   width: 90%;
   margin: auto;
@@ -1002,7 +1003,6 @@ export default {
   text-align: center;
 }
 
-/* 
 .vuecal__event.declared {
   background-color: rgba(81, 97, 247, 0.9);
   color: #fff;

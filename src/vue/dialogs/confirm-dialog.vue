@@ -26,10 +26,21 @@ with this file. If not, see
 <template>
   <md-dialog :md-active.sync="showDialog"
              @md-closed="closeDialog(false)">
-    <md-dialog-title class="_dialogTitle">{{title}}</md-dialog-title>
+    <md-dialog-title class="_dialogTitle">Delete event(s)</md-dialog-title>
 
     <md-dialog-content>
-      {{message}}
+      <div v-if="event && event.reference">
+        <div v-for="choice of choices"
+             :key="choice.value">
+          <md-radio v-model="userChoice"
+                    :value="choice.value"
+                    class="md-primary">{{choice.message}}</md-radio>
+        </div>
+
+      </div>
+      <div v-else>
+        Do you want to remove this event ?
+      </div>
     </md-dialog-content>
 
     <md-dialog-actions>
@@ -43,29 +54,71 @@ with this file. If not, see
 </template>
 
 <script>
+import { SpinalEventService } from "spinal-env-viewer-task-service";
+import EventBus, { EVENT_TYPES } from "../../js/event";
 export default {
   name: "confirmDialog",
   props: ["onFinised"],
   data() {
+    this.choices = [
+      {
+        message: "Remove only this event",
+        value: 1,
+      },
+      {
+        message: "Remove this event and all previous events of the same type",
+        value: 2,
+      },
+      {
+        message: "Remove this event and all next events of the same type",
+        value: 3,
+      },
+      {
+        message: "Remove this event and all events of the same type",
+        value: 4,
+      },
+    ];
+
+    this.events = [];
+
     return {
-      title: "",
-      message: "",
+      // title: "",
+      // message: "",
+      event: undefined,
+      userChoice: 1,
       callback: undefined,
       showDialog: true,
     };
   },
   mounted() {},
   methods: {
-    opened(option) {
-      this.message = option.message;
-      this.title = option.title;
+    async opened(option) {
+      this.event = option.event;
       this.callback = option.callback;
+
+      // this.message = option.message;
+      // this.title = option.title;
+      if (this.event.reference) {
+        this.events = await this.getEvents(
+          this.event.nodeId,
+          this.event.reference
+        );
+      }
     },
 
     async removed(option) {
-      if (typeof this.callback === "function") {
-        this.callback(option);
+      if (option) {
+        const eventTodelete = this.getEventToDelete(this.events, this.event);
+        const promises = eventTodelete.map(async (el) => {
+          const id = el.id;
+          await SpinalEventService.removeEvent(id);
+          EventBus.$emit(EVENT_TYPES.DELETED, id);
+        });
+
+        await Promise.all(promises);
       }
+
+      typeof this.callback === "function" && this.callback(option);
 
       this.showDialog = false;
     },
@@ -73,6 +126,35 @@ export default {
     closeDialog(closeResult) {
       if (typeof this.onFinised === "function") {
         this.onFinised(closeResult);
+      }
+    },
+
+    getEvents(nodeId, reference) {
+      if (!nodeId) return [];
+      return SpinalEventService.getEvents(nodeId).then((result) => {
+        const events = result.filter((el) => {
+          return el.reference && el.reference.get() == reference;
+        });
+
+        return events.map((el) => el.get());
+      });
+    },
+
+    getEventToDelete(events, event) {
+      switch (this.userChoice) {
+        case 1:
+          //only event
+          return events.filter((el) => el.id === event.id);
+        case 2:
+          //event && previous
+          return events.filter((el) => el.startDate <= event.startDate);
+        case 3:
+          //event && next
+          return events.filter((el) => el.startDate >= event.startDate);
+        case 4:
+          //all events
+
+          return events;
       }
     },
   },

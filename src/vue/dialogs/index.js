@@ -9,6 +9,7 @@ import CreateTaskContextDialog from "./createContext.vue";
 import CreateTaskDialog from "./createTask.vue";
 import EditTaskDialog from "./editTask.vue";
 import ConfirmDialog from "./confirm-dialog.vue";
+import DeleteAllDialog from "./delete-all.vue";
 
 const dialogs = [{
     name: "createTaskContextDialog",
@@ -28,6 +29,11 @@ const dialogs = [{
   {
     name: "confirmDialog",
     vueMountComponent: Vue.extend(ConfirmDialog),
+    parentContainer: document.body
+  },
+  {
+    name: "deleteAllDialog",
+    vueMountComponent: Vue.extend(DeleteAllDialog),
     parentContainer: document.body
   }
 ]

@@ -40,7 +40,8 @@ with this file. If not, see
 
           <div class="dates">
             <div class="begin">
-              <datetime v-model="event.startDate"
+              <datetime :format="'dd/MM/yyyy HH:mm'"
+                        v-model="event.startDate"
                         :min-datetime="startDateMin"
                         :title="'Start date'"
                         :type="'datetime'"
@@ -52,7 +53,8 @@ with this file. If not, see
             </div>
 
             <div class="end">
-              <datetime v-model="event.endDate"
+              <datetime :format="'dd/MM/yyyy HH:mm'"
+                        v-model="event.endDate"
                         :min-datetime="endDateMin"
                         :max-datetime="endDateMax"
                         :title="'End date'"
@@ -181,7 +183,7 @@ export default {
       option.endDate = moment(option.endDate).toISOString();
 
       this.event = option;
-      delete this.event.repeat;
+      // delete this.event.repeat;
     },
 
     async removed(option) {
@@ -208,14 +210,15 @@ export default {
         this.event.startDate.toString().trim().length > 0 &&
         this.event.endDate &&
         this.event.endDate.toString().trim().length > 0 &&
-        this.event.periodicity &&
-        this.event.periodicity.toString().trim().length > 0 &&
+        // this.event.periodicity &&
+        // this.event.periodicity.toString().trim().length > 0 &&
         this.event.name &&
         this.event.name.toString().trim().length > 0;
 
-      if (!this.event.repeat) return !condition;
+      return !condition;
+      // if (!this.event.repeat) return !condition;
 
-      return !(condition && this.event.periodicity.count >= 1);
+      // return !(condition && this.event.periodicity.count >= 1);
     },
   },
 

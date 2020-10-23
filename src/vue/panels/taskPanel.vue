@@ -45,32 +45,35 @@ with this file. If not, see
 
     <!-- </task-calendar> -->
 
+    <div class="header">
+      <div class="display">
+        <md-checkbox v-model="displayEventsShared"
+                     class="md-primary" />
+        <span class="md-list-item-text">Display Events Shared</span>
+      </div>
+
+      <div class="display">
+        <md-checkbox v-model="displayonlyEventsShared"
+                     class="md-primary" />
+        <span class="md-list-item-text">Display only Events Shared</span>
+      </div>
+
+    </div>
+
     <vue-cal class="calendar_container vuecal--full-height-delete"
              ref="vuecal"
+             :time="true"
              :dblclick-to-navigate="false"
              events-count-on-year-view
              events-on-month-view="short"
              default-view="month"
              active-view="month"
-             :time="false"
              :disable-views="['years']"
              :events="events"
              :on-event-dblclick="onEventClick"
              :editable-events="{ title: false, drag: false, resize: false, delete: true, create: false }"
              @event-delete="deleteEvent"
              @cell-dblclick="cellDblClick">
-      <!-- :split-days="standard_buttons"
-             sticky-split-labels> -->
-
-      <!-- <template v-slot:split-label="{ split, view }">
-
-        <md-button class="md-icon-button headerButtons"
-                   :title="split.label"
-                   @click="split.action(split)">
-          <md-icon>{{split.icon}}</md-icon>
-        </md-button>
-
-      </template> -->
 
     </vue-cal>
 
@@ -81,19 +84,45 @@ with this file. If not, see
                    :day-headers="false"
                    :config="config"></full-calendar> -->
 
-    <md-button v-if="!isEventContext"
-               class="addIconFab md-fab md-mini md-primary md-fab-bottom-right"
-               @click="addEvent"
-               title="add event">
-      <md-icon class="md-primary">add</md-icon>
-    </md-button>
+    <!-- <div class="fabs"> -->
+    <md-speed-dial class="md-bottom-right"
+                   md-direction="top">
+      <md-speed-dial-target class="md-primary md-fab md-mini">
+        <md-icon class="md-morph-initial">menu</md-icon>
+        <md-icon class="md-morph-final">close</md-icon>
+      </md-speed-dial-target>
+
+      <md-speed-dial-content>
+
+        <md-button class="addIconFab md-fab md-mini md-accent"
+                   @click="removeAllEvents"
+                   title="remove all event">
+          <md-icon class="md-primary">delete</md-icon>
+        </md-button>
+
+        <md-button class="addIconFab md-fab md-mini md-primary"
+                   @click="seeEvents"
+                   title="select all event">
+          <md-icon class="md-primary">visibility</md-icon>
+        </md-button>
+
+        <md-button v-if="!isEventContext"
+                   class="addIconFab md-fab md-mini md-primary"
+                   @click="addEvent"
+                   title="add event">
+          <md-icon class="md-primary">add</md-icon>
+        </md-button>
+
+      </md-speed-dial-content>
+
+    </md-speed-dial>
+    <!-- </div> -->
 
   </md-content>
 </template>event
 
 <script>
 import { spinalPanelManagerService } from "spinal-env-viewer-panel-manager-service";
-// import TasksCalendar from "../components/tasksCalendar.vue";
 import {
   SpinalEvent,
   SpinalEventService,
@@ -104,8 +133,9 @@ import selectElementOnMaquette from "../../buttons/standard_buttons/select";
 
 import VueCal from "vue-cal";
 import moment from "moment";
-// import { FullCalendar } from "vue-full-calendar";
 import EventBus, { EVENT_TYPES } from "../../js/event";
+
+import Standard_buttons_service from "spinal-env-viewer-plugin-note-standard-buttons-service";
 
 export default {
   name: "taskPanelContainer",
@@ -119,22 +149,21 @@ export default {
       {
         icon: "visibility",
         label: "select on 3D model",
-        action: (view) => {
-          console.log("see", view);
-        },
+        action: (view) => {},
       },
       {
         icon: "settings_overscan",
         label: "isolate on 3D model",
-        action: (view) => {
-          console.log("isolate", view);
-        },
+        action: (view) => {},
       },
       // {
       //   icon: "",
       //   label: "z",
       // },
     ];
+
+    this.eventShared = [];
+    this.node_events = [];
 
     return {
       isEventContext: false,
@@ -143,19 +172,31 @@ export default {
       colormaps: new Map(),
       config: {},
       styleTag: document.createElement("style"),
+      displayEventsShared: true,
+      displayonlyEventsShared: false,
     };
   },
   mounted() {
     EventBus.$on(EVENT_TYPES.CREATED, async () => {
-      await this.setEvents();
+      const contextId = this.nodeInfo.context && this.nodeInfo.context.id.get();
+      const nodeId =
+        this.nodeInfo.selectedNode && this.nodeInfo.selectedNode.id.get();
+
+      await this.reloadData(contextId, nodeId);
+      this.events = await this.setEvents();
     });
 
     EventBus.$on(EVENT_TYPES.UPDATED, async () => {
-      await this.setEvents();
+      const contextId = this.nodeInfo.context && this.nodeInfo.context.id.get();
+      const nodeId =
+        this.nodeInfo.selectedNode && this.nodeInfo.selectedNode.id.get();
+
+      await this.reloadData(contextId, nodeId);
+      this.events = await this.setEvents();
     });
 
-    EventBus.$on(EVENT_TYPES.DELETED, async () => {
-      await this.setEvents();
+    EventBus.$on(EVENT_TYPES.DELETED, (id) => {
+      this.events = this.events.filter((el) => el.id !== id);
     });
   },
   methods: {
@@ -164,35 +205,45 @@ export default {
 
       const nodeId = option.selectedNode && option.selectedNode.id.get();
       const contextId = option.context && option.context.id.get();
-
       const name = await this.getName();
-
       this.isEventContext = option.isEventContext;
+      await this.reloadData(contextId, nodeId);
 
-      await this.setEvents();
+      this.events = await this.setEvents();
 
       document.head.appendChild(this.styleTag);
       this.setTitle(name);
     },
 
+    reloadData(contextId, nodeId) {
+      return Promise.all([
+        this.getNodeEvents(contextId, nodeId),
+        this.getEventShared(nodeId),
+      ]).then((result) => {
+        this.node_events = result[0];
+        this.eventShared = result[1];
+      });
+    },
+
     closed() {},
 
-    async setEvents() {
-      if (this.isEventContext) {
-        this.events = await this.getEventsInEventContext(
-          this.nodeInfo.context.id.get(),
-          this.nodeInfo.selectedNode.id.get()
-        );
-      } else if (
-        !this.isEventContext &&
-        this.nodeInfo.selectedNode &&
-        this.nodeInfo.selectedNode.id.get()
-      ) {
-        this.events = await this._getAndFormatEvents(
-          this.nodeInfo.selectedNode.id.get()
-        );
+    setEvents() {
+      if (this.displayonlyEventsShared) {
+        return this.eventShared;
+      } else if (!this.displayEventsShared) {
+        return this.node_events;
       } else {
-        this.events = [];
+        return [...this.eventShared, ...this.node_events];
+      }
+    },
+
+    getNodeEvents(contextId, nodeId) {
+      if (this.isEventContext) {
+        return this.getEventsInEventContext(contextId, nodeId);
+      } else if (!this.isEventContext && nodeId) {
+        return this._getAndFormatEvents(nodeId);
+      } else {
+        return [];
       }
     },
 
@@ -218,24 +269,30 @@ export default {
     },
 
     onEventClick(event) {
-      console.log("events");
       spinalPanelManagerService.openPanel("seeEventDetail", event);
     },
 
-    async _getAndFormatEvents(nodeId) {
+    async _getAndFormatEvents(nodeId, isSharedEvent = false) {
       const events = await SpinalEventService.getEvents(nodeId);
-      const promises = events.map((el) => this._formatEvent(el.get()));
+      const promises = events.map((el) =>
+        this._formatEvent(el.get(), isSharedEvent)
+      );
       return Promise.all(promises);
     },
 
-    async _formatEvent(event) {
+    async _formatEvent(event, isSharedEvent) {
       const group = await this._getEventColor(event.groupId, event.contextId);
 
       event.title = event.name;
       event.start = this._formatDate(event.startDate);
-      event.end = this._formatDate(event.startDate);
+      event.end = this._formatDate(event.endDate);
       event.class = event.groupId;
       event.backgroundColor = group && group.color;
+
+      if (isSharedEvent) {
+        event.content = '<i class="v-icon material-icons">link</i>';
+      }
+
       // event.deletable = true;
       // event.titleEditable = false;
       // event.textColor = "#ffffff";
@@ -270,7 +327,10 @@ export default {
 
     _formatDate(argDate) {
       let date = new Date(argDate);
-      return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+
+      return `${date.getFullYear()}-${
+        date.getMonth() + 1
+      }-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
     },
 
     setTitle(title) {
@@ -288,6 +348,7 @@ export default {
           [this.nodeInfo.dbid],
           { propFilter: ["name"] },
           async (el) => {
+            les;
             const name = el[0].name;
             resolve(name);
           }
@@ -302,6 +363,22 @@ export default {
       this.styleTag.appendChild(document.createTextNode(css));
     },
 
+    timeConvertor(time) {
+      var PM = time.match("PM") ? true : false;
+
+      time = time.split(":");
+      var min = time[1];
+
+      if (PM) {
+        var hour = 12 + parseInt(time[0], 10);
+        var sec = time[2].replace("PM", "");
+      } else {
+        var hour = time[0];
+        var sec = time[2].replace("AM", "");
+      }
+
+      return `${hour}:${min}`;
+    },
     // next() {
     //   this.$refs.calendar.fireMethod("next");
     // },
@@ -312,14 +389,11 @@ export default {
 
     deleteEvent(event) {
       spinalPanelManagerService.openPanel("confirmDialog", {
-        title: "Delete",
-        message: "Do you want to remove this event ?",
+        event: event,
+        // title: "Delete",
+        // message: "Do you want to remove this event ?",
         callback: (res) => {
-          if (res) {
-            SpinalEventService.removeEvent(event.id).then((result) => {
-              EventBus.$emit(EVENT_TYPES.DELETED, event.id);
-            });
-          } else {
+          if (!res) {
             this.events = [...this.events];
           }
         },
@@ -340,14 +414,113 @@ export default {
         return true;
       });
 
-      events.forEach((element) => {
-        const params = {
-          selectedNode: new Model(element),
-          context: SpinalGraphService.getInfo(element.contextId),
-        };
+      this.selectEventsOnMaquete(events);
+    },
 
-        selectElementOnMaquette.action(params);
+    getBimObjects(events) {
+      const proms = events.map((el) => {
+        return Standard_buttons_service.getGeographicElement(el.id);
       });
+
+      return Promise.all(proms).then(async (el) => {
+        const res = el.flat();
+        const promises = res.map((v) =>
+          Standard_buttons_service._getItemsBim(v)
+        );
+
+        let bims = await Promise.all(promises);
+        bims = bims.flat();
+
+        const bimMap = new Map();
+
+        for (const bimObject of bims) {
+          const bimFileId = bimObject.bimFileId;
+          const dbid = bimObject.dbid;
+
+          if (typeof bimMap.get(bimFileId) === "undefined") {
+            bimMap.set(bimFileId, new Set());
+          }
+
+          bimMap.get(bimFileId).add(dbid);
+        }
+        const formated = [];
+
+        for (const [key, value] of bimMap.entries()) {
+          formated.push({
+            model: window.spinal.BimObjectService.getModelByBimfile(key),
+            ids: Array.from(value),
+          });
+        }
+
+        return formated;
+      });
+    },
+
+    async selectEventsOnMaquete(events) {
+      // events.forEach((element) => {
+      //   const params = {
+      //     selectedNode: new Model(element),
+      //     context: SpinalGraphService.getInfo(element.contextId),
+      //   };
+      //   selectElementOnMaquette.action(params);
+      // });
+      if (events.length === 0) return;
+
+      const bims = await this.getBimObjects(events);
+      bims.forEach((el) => {
+        el.model.selector.setSelection(el.ids, el.model, "selectOnly");
+      });
+    },
+
+    removeAllEvents() {
+      const events = this.$refs.vuecal.view.events;
+      if (events.length === 0) return;
+
+      spinalPanelManagerService.openPanel("deleteAllDialog", {
+        events: events.filter((event) => {
+          const found = this.eventShared.find((el) => el.id === event.id);
+          return found ? false : true;
+        }),
+      });
+    },
+
+    seeEvents() {
+      const events = this.$refs.vuecal.view.events;
+      this.selectEventsOnMaquete(events);
+    },
+
+    async getEventShared(nodeId) {
+      if (this.isEventContext || !nodeId) return [];
+      const realNode = SpinalGraphService.getRealNode(nodeId);
+
+      const parents = await realNode.getParents();
+      const promises = parents.map((el) => {
+        SpinalGraphService._addNode(el);
+        return this._getAndFormatEvents(el.getId().get(), true);
+      });
+
+      return Promise.all(promises).then((result) => {
+        let res = [];
+        for (const eventList of result) {
+          res.push(...eventList);
+        }
+        return res;
+      });
+    },
+  },
+  watch: {
+    displayEventsShared() {
+      if (this.displayEventsShared === false) {
+        this.displayonlyEventsShared = false;
+      }
+      this.events = this.setEvents();
+    },
+
+    displayonlyEventsShared() {
+      if (this.displayonlyEventsShared) {
+        this.displayEventsShared = true;
+      }
+      this.events = this.setEvents();
     },
   },
   destroyed() {
@@ -363,9 +536,32 @@ export default {
   background-color: transparent;
 }
 
+.event_container .fabs {
+  width: 150px;
+  position: absolute;
+  bottom: 20px;
+  right: 0px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.event_container .header {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  background: transparent;
+  padding: 0 5px 0 5px;
+}
+
+.event_container .header .display {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
 .calendar_container {
   width: 99%;
-  height: 90%;
+  height: calc(100% - 74px);
   margin: auto;
 }
 
@@ -401,9 +597,12 @@ export default {
 
 .vuecal__event {
   width: 90%;
+  height: auto;
   margin: auto;
   cursor: pointer;
   margin-top: 5px;
+  color: #fff;
+  padding: 3px;
   /*padding: 5px;
   text-align: center; */
 }
@@ -768,13 +967,14 @@ export default {
   }
 }
 .vuecal__event {
-  color: #666;
+  /* color: #666; */
+  font-weight: bold;
   background-color: hsla(0, 0%, 97.3%, 0.8);
   position: relative;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   left: 0;
-  width: 100%;
+  /* width: 100%; */
   z-index: 1;
   -webkit-transition: left 0.3s, width 0.3s, -webkit-box-shadow 0.3s;
   transition: left 0.3s, width 0.3s, -webkit-box-shadow 0.3s;
