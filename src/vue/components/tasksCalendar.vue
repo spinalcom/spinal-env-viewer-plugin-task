@@ -1,138 +1,98 @@
+<!--
+Copyright 2020 SpinalCom - www.spinalcom.com
+
+This file is part of SpinalCore.
+
+Please read all of the following terms and conditions
+of the Free Software license Agreement ("Agreement")
+carefully.
+
+This Agreement is a legally binding contract between
+the Licensee (as defined below) and SpinalCom that
+sets forth the terms and conditions that govern your
+use of the Program. By installing and/or using the
+Program, you agree to abide by all the terms and
+conditions stated or referenced herein.
+
+If you do not agree to abide by these terms and
+conditions, do not demonstrate your acceptance and do
+not install or use the Program.
+You should have received a copy of the license along
+with this file. If not, see
+<http://resources.spinalcom.com/licenses.pdf>.
+-->
+
 <template>
-  <div class="_content">
+  <div class="calendar_container">
+    <vue-cal ref="calendarVue"
+             v-bind="allProps">
 
-    <!-- <div class="header md-layout">
-      <md-button class="headerBtn md-layout-item md-size-45">
-        <md-icon>open_in_browser</md-icon>
-        Export
-      </md-button>
+      <!-- <template v-slot:event="{ event, view }">
+        <div class="event-content"
+             :style="{backgroundColor : event.color}">hello world</div>
+      </template> -->
 
-      <md-button class="headerBtn md-layout-item md-size-45">
-        <md-icon>file_download</md-icon>
-        Import
-      </md-button>
-    </div> -->
+      <template v-slot:event="{ event, view }">
+        <v-icon>{{ event.icon }}</v-icon>
 
-    <div class="calendar">
-      <vue-cal :time="false"
-               :events="events"
-               :on-event-click="onEventClick"
-               :disable-views="['year','years']"
-               events-count-on-year-view
-               events-on-month-view="short"
-               default-view="month"
-               :locale="'fr'"></vue-cal>
-    </div>
+        <div class="vuecal__event-title"
+             v-html="event.title" />
+
+        <div class="vuecal__event-title vuecal__event-title--edit"
+             contenteditable
+             @blur="event.title = $event.target.innerHTML"
+             v-html="event.title" />
+
+        <small class="vuecal__event-time">
+
+          <strong>Event start:</strong>
+          <span>{{ event.start.formatTime("h O'clock") }}</span><br />
+          <strong>Event end:</strong>
+          <span>{{ event.end.formatTime("h O'clock") }}</span>
+        </small>
+      </template>
+    </vue-cal>
   </div>
+
 </template>
 
 <script>
-import taskService from "spinal-env-viewer-task-service";
-
-const {
-  spinalPanelManagerService
-} = require("spinal-env-viewer-panel-manager-service");
-
 import VueCal from "vue-cal";
-// import "vue-cal/dist/vuecal.css";
-import "vue-cal/dist/i18n/fr";
 
 export default {
-  name: "eventsManagePanel",
-  components: {
-    "vue-cal": VueCal
-  },
+  name: "event-calendar",
+  props: Object.assign({}, VueCal.props),
+  components: { "vue-cal": VueCal },
   data() {
     return {
-      visitId: null,
-      events: []
+      allProps: {},
     };
   },
-  methods: {
-    opened(option) {
-      this.setTitle(`Manage Events : ${option.name}`);
-      this.visitId = option.id;
-      this.getTaskEvents(option.id);
+  mounted() {
+    // this.allProps = this.$options.propsData;
+    // console.log("props", this);
+    this.allProps = this.$props;
+  },
+
+  watch: {
+    events() {
+      // this.allProps = this.$props;
     },
-
-    setTitle(title) {
-      spinalPanelManagerService.panels.eventsManagePanel.panel.setTitle(title);
-    },
-
-    getTaskEvents(visitId) {
-      taskService.getVisitEvents(visitId).then(res => {
-        this.events = res.map(el => {
-          return {
-            eventId: el.id,
-            visitId: el.visitId,
-            groupId: el.groupId,
-            reference: el.reference,
-            start: this.formatDate(el.date),
-            end: this.formatDate(el.date),
-            title: el.name,
-            class: el.state
-          };
-        });
-      });
-    },
-
-    formatDate(argDate) {
-      let date = new Date(argDate);
-
-      return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-    },
-
-    onEventClick(ev) {
-      console.log("eventClicked");
-      spinalPanelManagerService.openPanel("editEventDialog", {
-        data: ev,
-        callback: () => {
-          this.getTaskEvents(this.visitId);
-        }
-      });
-    }
-  }
+  },
 };
 </script>
 
-
-
 <style scoped>
-._content {
-  width: 100%;
-  height: 95%;
-}
-
-._content .header {
-  width: 100%;
-  height: 60px;
-  border-bottom: 1px solid #ddd;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-._content .header .headerBtn {
-  display: flex;
-  align-items: center;
-  border: 1px solid #fff;
-}
-
-._content .calendar {
-  width: 100%;
-  height: calc(100% - 15px);
-}
+/* .calendar_container {
+  width: 99%;
+  height: 99%;
+  margin: auto;
+} */
 </style>
 
 
-
-
-
-
-
 <style>
-/** VueCal Css */
-
+/*
 .vuecal__weekdays-headings {
   border-bottom: 1px solid #ddd;
   margin-bottom: -1px;
@@ -384,8 +344,9 @@ export default {
   }
 }
 .vuecal__event {
-  color: #666;
-  background-color: #f8f8f8;
+  color: #fff;
+  font-weight: bold;
+  background-color: #448aff; 
   position: relative;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
@@ -639,16 +600,23 @@ export default {
   -webkit-transform: translateX(-50%);
   transform: translateX(-50%);
   min-width: 12px;
-  height: 12px;
+  height: 30px;
+  width: 30px;
   line-height: 12px;
   padding: 0 3px;
-  background: #999;
+  background: #448aff;
   color: #fff;
   border-radius: 12px;
   font-size: 10px;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  font-weight: bold;
 }
+
 .vuecal__cell-content {
   width: 100%;
 }
@@ -1023,10 +991,8 @@ export default {
 .vuecal--rounded-theme.vuecal--blue-theme:not(.vuecal--day-view)
   .selected
   .vuecal__cell-content {
-  border-color: #61a9e0;
+  border-color: #448aff;
 }
-
-/** Css Added */
 
 .vuecal__event {
   width: 90%;
@@ -1034,20 +1000,19 @@ export default {
   cursor: pointer;
   margin-top: 5px;
   padding: 5px;
+  text-align: center;
 }
 
 .vuecal__event.declared {
   background-color: rgba(81, 97, 247, 0.9);
   color: #fff;
 }
-
 .vuecal__event.done {
   background-color: rgba(18, 228, 35, 0.9);
   color: #fff;
 }
-
 .vuecal__event.processing {
   background-color: rgba(240, 180, 16, 0.973);
   color: #fff;
-}
+} */
 </style>
