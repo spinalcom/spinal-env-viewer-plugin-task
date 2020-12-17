@@ -13,13 +13,14 @@
     "exceljs": "^1.13.0",
     "file-saver": "^2.0.2",
     "luxon": "^1.25.0",
+    "spinal-env-viewer-plugin-note-standard-buttons-service" : "git+https://github.com/spinalcom/spinal-env-viewer-plugin-note-standard-buttons-service.git"
     "spinal-env-viewer-context-menu-service": "git+https://github.com/spinalcom/spinal-env-viewer-context-menu-service.git",
     "spinal-env-viewer-graph-service": "git+https://github.com/spinalcom/Spinal-Graph-Service.git",
     "spinal-env-viewer-room-manager": "git+https://github.com/spinalcom/spinal-env-viewer-room-manager.git",
     "spinal-env-viewer-task-service": "git+https://github.com/spinalcom/spinal-env-viewer-task-service.git",
     "vue-cal": "^3.8.1",
     "vue-datetime": "^1.0.0-beta.14",
-    "weekstart": "^1.0.1"
+    "weekstart": "^1.0.1",
   },
   "browserify": {
     "transform": [
