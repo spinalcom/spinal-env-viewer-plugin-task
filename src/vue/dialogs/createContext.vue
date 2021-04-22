@@ -26,7 +26,7 @@ with this file. If not, see
 <template>
   <md-dialog :md-active.sync="showDialog"
              @md-closed="closeDialog(false)">
-    <md-dialog-title class="_dialogTitle">Create Task Context</md-dialog-title>
+    <md-dialog-title class="_dialogTitle">Create Event Context</md-dialog-title>
 
     <md-dialog-content>
       <md-field>
