@@ -12,7 +12,7 @@
   "dependencies": {
     "exceljs": "^1.13.0",
     "file-saver": "^2.0.2",
-    "luxon": "^1.25.0",
+    "luxon": "^1.28.1",
     "spinal-env-viewer-plugin-note-standard-buttons-service" : "git+https://github.com/spinalcom/spinal-env-viewer-plugin-note-standard-buttons-service.git",
     "spinal-env-viewer-context-menu-service": "git+https://github.com/spinalcom/spinal-env-viewer-context-menu-service.git",
     "spinal-env-viewer-graph-service": "git+https://github.com/spinalcom/Spinal-Graph-Service.git",
